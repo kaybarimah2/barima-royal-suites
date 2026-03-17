@@ -1073,101 +1073,125 @@
     }
 
     // ==================== BOOKING FORM ==================== 
-    async function submitBooking(event) {
-      event.preventDefault();
+   async function submitBooking(event) {
+  event.preventDefault();
 
-      const name = document.getElementById('guestName').value.trim();
-      const email = document.getElementById('guestEmail').value.trim();
-      const phone = document.getElementById('guestPhone').value.trim();
-      const nationalId = document.getElementById('guestNationalId').value.trim();
-      const roomType = document.getElementById('roomType').value;
-      const checkIn = document.getElementById('checkIn').value;
-      const checkOut = document.getElementById('checkOut').value;
-      const paymentMethod = document.getElementById('paymentMethod').value;
+  const name = document.getElementById('guestName').value.trim();
+  const email = document.getElementById('guestEmail').value.trim();
+  const phone = document.getElementById('guestPhone').value.trim();
+  const nationalId = document.getElementById('guestNationalId').value.trim();
+  const roomType = document.getElementById('roomType').value;
+  const checkIn = document.getElementById('checkIn').value;
+  const checkOut = document.getElementById('checkOut').value;
+  const paymentMethod = document.getElementById('paymentMethod').value;
 
-      if (!name || !email || !phone || !nationalId || !roomType || !checkIn || !checkOut || !paymentMethod) {
-        showToast('Please fill in all fields', 'error');
-        return;
-      }
+  // Validation
+  if (!name || !email || !phone || !nationalId || !roomType || !checkIn || !checkOut || !paymentMethod) {
+    showToast('Please fill in all fields', 'error');
+    return;
+  }
 
-      const btn = document.getElementById('bookingSubmitBtn');
-      btn.disabled = true;
-      btn.textContent = 'Processing...';
+  const btn = document.getElementById('bookingSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Processing...';
 
-      try {
-        if (!window.dataSdk) {
-          showToast('Data SDK not available', 'error');
-          return;
-        }
+  try {
+    // 1. Create guest in YOUR Postgres DB
+    const guestRes = await fetch('/api/guests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        full_name: name,
+        phone_number: phone,
+        email: email,
+        national_id: nationalId.toUpperCase()
+      })
+    });
 
-        const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
-        const template = ROOM_TEMPLATES.find(t => t.type === roomType);
-        const amount = nights * template.price;
-        const resId = 'RES-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-        const payId = 'PAY-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    if (!guestRes.ok) throw new Error('Failed to create guest');
+    const guest = await guestRes.json();
+    const guestId = guest.guest_id;
 
-        // Create guest
-        const guestRes = await window.dataSdk.create({
-          record_type: 'guest',
-          guest_id: 'GUEST-' + Math.random().toString(36).substr(2, 6),
-          full_name: name,
-          email: email,
-          phone_number: phone,
-          national_id: nationalId
-        });
+    // 2. Get available room
+    const roomsRes = await fetch(`/api/rooms?type=${roomType}&status=Available`);
+    if (!roomsRes.ok) throw new Error('Failed to fetch rooms');
+    const rooms = await roomsRes.json();
+    const availRoom = rooms.find(r => r.room_type === roomType && r.room_status === 'Available');
 
-        if (!guestRes.isOk) throw new Error('Failed to create guest');
-
-        // Create reservation
-        const resResult = await window.dataSdk.create({
-          record_type: 'reservation',
-          reservation_id: resId,
-          full_name: name,
-          email: email,
-          phone_number: phone,
-          room_type: roomType,
-          check_in_date: checkIn,
-          check_out_date: checkOut,
-          reservation_date: new Date().toISOString(),
-          reservation_status: 'Confirmed',
-          payment_amount: amount,
-          payment_method: paymentMethod
-        });
-
-        if (!resResult.isOk) throw new Error('Failed to create reservation');
-
-        // Create payment
-        const payResult = await window.dataSdk.create({
-          record_type: 'payment',
-          payment_id: payId,
-          reservation_id: resId,
-          payment_amount: amount,
-          payment_date: new Date().toISOString(),
-          payment_method: paymentMethod,
-          payment_status: 'Fully Paid'
-        });
-
-        if (!payResult.isOk) throw new Error('Failed to create payment');
-
-        // Show confirmation
-        document.getElementById('conf-resid').textContent = resId;
-        document.getElementById('conf-name').textContent = name;
-        document.getElementById('conf-room').textContent = roomType;
-        document.getElementById('conf-checkin').textContent = formatDate(checkIn);
-        document.getElementById('conf-checkout').textContent = formatDate(checkOut);
-        document.getElementById('conf-amount').textContent = `$${amount.toLocaleString()}`;
-
-        document.getElementById('booking-form-container').style.display = 'none';
-        document.getElementById('booking-confirmation').style.display = 'block';
-        showToast('✓ Reservation created successfully!', 'success');
-
-      } catch (err) {
-        showToast('Error: ' + err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Confirm Reservation';
-      }
+    if (!availRoom) {
+      showToast('No rooms available for this type', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Confirm Reservation';
+      return;
     }
+
+    // 3. Create reservation
+    const resRes = await fetch('/api/reservations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        guest_id: guestId,
+        room_number: availRoom.room_number,
+        room_type: roomType,
+        check_in_date: checkIn,
+        check_out_date: checkOut,
+        payment_method: paymentMethod
+      })
+    });
+
+    if (!resRes.ok) throw new Error('Failed to create reservation');
+    const reservation = await resRes.json();
+    const reservationId = reservation.reservation_id;
+
+    // 4. Calculate amount
+    const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
+    const template = ROOM_TEMPLATES.find(t => t.type === roomType);
+    const amount = nights * template.price;
+
+    // 5. Create payment
+    const payRes = await fetch('/api/payments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        reservation_id: reservationId,
+        guest_id: guestId,
+        payment_amount: amount,
+        payment_method: paymentMethod,
+        payment_status: 'Fully Paid'
+      })
+    });
+
+    if (!payRes.ok) throw new Error('Failed to create payment');
+
+    // 6. Update room status to Occupied
+    const updateRes = await fetch(`/api/rooms/${availRoom.room_number}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room_status: 'Occupied' })
+    });
+
+    if (!updateRes.ok) console.warn('Room status update warning');
+
+    // 7. Show confirmation
+    document.getElementById('conf-resid').textContent = reservationId;
+    document.getElementById('conf-name').textContent = name;
+    document.getElementById('conf-room').textContent = `${roomType} (Rm ${availRoom.room_number})`;
+    document.getElementById('conf-checkin').textContent = formatDate(checkIn);
+    document.getElementById('conf-checkout').textContent = formatDate(checkOut);
+    document.getElementById('conf-amount').textContent = `$${amount.toLocaleString()}`;
+
+    document.getElementById('booking-form-container').style.display = 'none';
+    document.getElementById('booking-confirmation').style.display = 'block';
+    showToast('✓ Reservation created successfully!', 'success');
+
+  } catch (err) {
+    showToast('Error: ' + err.message, 'error');
+    console.error('Booking error:', err);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Confirm Reservation';
+  }
+}
 
     function resetBookingForm() {
       document.getElementById('bookingForm').reset();
