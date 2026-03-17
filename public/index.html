@@ -51,10 +51,17 @@
      <!-- Hero Slideshow -->
      <div class="hero-bg">
       <div class="hero-slideshow" id="heroSlideshow"></div>
-     </div>
-     <!-- Hero Background for Slideshow -->
-     <div class="hero-bg"></div>
-     <!-- Featured Rooms on Home -->
+      <div class="slide-overlay"></div>
+      <div class="hero-content">
+       <p style="color:var(--gold);letter-spacing:0.25em;font-size:0.75rem;text-transform:uppercase;margin-bottom:1rem;font-weight:600;animation:fadeInUp 0.8s ease-out;">Welcome to Luxury</p>
+       <h1 class="font-display" id="home-hotel-name" style="color:white;font-size:max(3rem,min(7vw,5rem));font-weight:300;line-height:1.1;margin:0 0 1rem;animation:fadeInUp 0.8s ease-out 0.1s both;">Barima Royal Suites</h1>
+       <div class="section-divider" style="animation:fadeInUp 0.8s ease-out 0.2s both;"></div>
+       <p class="font-display" id="home-tagline" style="color:rgba(255,255,255,0.8);font-size:max(1.1rem,min(3vw,1.4rem));font-weight:300;margin:0 0 2rem;font-style:italic;animation:fadeInUp 0.8s ease-out 0.3s both;">"Where Luxury Meets Comfort"</p>
+       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeInUp 0.8s ease-out 0.5s both;">
+        <button class="btn-gold" style="padding:1rem 2.5rem;border-radius:4px;font-size:0.85rem;box-shadow:0 8px 24px rgba(201,168,76,0.25);transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 32px rgba(201,168,76,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 24px rgba(201,168,76,0.25)'" onclick="showPage('booking')">Book Your Stay</button> <button class="btn-outline" style="padding:1rem 2.5rem;border-radius:4px;font-size:0.85rem;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" onclick="showPage('rooms')">Explore Rooms</button>
+       </div>
+      </div>
+     </div><!-- Featured Rooms on Home -->
      <div style="padding:5rem 2rem;background:var(--surface);">
       <div style="max-width:1200px;margin:0 auto;">
        <div style="text-align:center;margin-bottom:3rem;">
@@ -1231,23 +1238,22 @@
     }
 
     // ==================== ADMIN FUNCTIONS ==================== 
-   // ==================== ADMIN FUNCTIONS ==================== 
-function adminLogin(event) {
-  event.preventDefault();
-  const username = document.getElementById('adminUsername').value.trim();
-  const password = document.getElementById('adminPassword').value.trim();
+    function adminLogin(event) {
+      event.preventDefault();
+      const username = document.getElementById('adminUsername').value.trim();
+      const password = document.getElementById('adminPassword').value.trim();
 
-  // THIS IS THE PART TO REPLACE
-  if (username === 'admin' && password === 'admin123') { 
-    currentUser = username;
-    document.getElementById('admin-login-container').style.display = 'none';
-    document.getElementById('admin-dashboard-container').style.display = 'block';
-    renderReservationsTable();
-    showToast('Admin login successful', 'success');
-  } else {
-    // ... error handling ...
-  }
-}
+      if (username === 'admin' && password === 'admin123') {
+        currentUser = username;
+        document.getElementById('admin-login-container').style.display = 'none';
+        document.getElementById('admin-dashboard-container').style.display = 'block';
+        renderReservationsTable();
+        showToast('Admin login successful', 'success');
+      } else {
+        document.getElementById('admin-login-error').textContent = 'Invalid username or password';
+        document.getElementById('admin-login-error').style.display = 'block';
+      }
+    }
 
     function adminLogout() {
       currentUser = null;
@@ -1412,6 +1418,5 @@ function adminLogin(event) {
       lucide.createIcons();
     });
   </script>
-  <script src="script.js"></script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ddcd0abe42a9346',t:'MTc3Mzc1OTA4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

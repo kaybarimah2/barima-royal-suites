@@ -30,16 +30,6 @@ body { font-family: 'Jost', sans-serif; background: var(--surface); color: var(-
 
 .card { background: white; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
 .hero-bg { position: relative; min-height: 600px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-.hero-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background-size: cover;
-  background-position: center;
-  z-index: -1;
-}
 
 input, select, textarea { font-family: 'Jost', sans-serif; }
 
@@ -124,25 +114,4 @@ input, select, textarea { font-family: 'Jost', sans-serif; }
   #reservations-table td { padding: 0.4rem !important; white-space: normal !important; }
   .desktop-nav { display: none !important; }
   .status-badge { padding: 3px 8px !important; font-size: 0.65rem !important; }
-}
-
-/* Add styles for the background slideshow */
-.hero-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background-size: cover;
-  background-position: center;
-  z-index: -1;
-}
-
-@keyframes slideShow {
-  0% { background-image: url('https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg'); }
-  20% { background-image: url('https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg'); }
-  40% { background-image: url('https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg'); }
-  60% { background-image: url('https://images.pexels.com/photos/164558/pexels-photo-164558.jpeg'); }
-  80% { background-image: url('https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg'); }
-  100% { background-image: url('https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg'); }
 }

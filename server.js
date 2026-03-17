@@ -3,8 +3,7 @@ const path = require('path');
 const cors = require('cors');
 const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
-const bcrypt = require('bcrypt'); // Add this at the top for password hashing
-require('dotenv').config({ path: './Pass.gitignore/.env' }); // Explicitly load .env from Pass.gitignore folder
+require('dotenv').config();
 
 const app = express();
 
@@ -12,7 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
-
+// Force the server to send index.html when users visit the main URL
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -20,8 +19,7 @@ app.get('/', (req, res) => {
 // Database connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  password: String(process.env.DATABASE_PASSWORD || 'Presec@2022') // Ensure password is a string
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 // Test DB connection
@@ -29,8 +27,6 @@ pool.query('SELECT NOW()', (err, res) => {
   if (err) console.error('DB Connection Error:', err);
   else console.log('✓ Database connected');
 });
-
-console.log('DATABASE_URL:', process.env.DATABASE_URL); // Debug the loaded DATABASE_URL
 
 // ==================== GUESTS ====================
 app.post('/api/guests', async (req, res) => {
@@ -49,6 +45,15 @@ app.post('/api/guests', async (req, res) => {
   }
 });
 
+app.get('/api/guests/:id', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM guests WHERE guest_id = $1', [req.params.id]);
+    res.json(result.rows[0] || {});
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // ==================== ROOMS ====================
 app.get('/api/rooms', async (req, res) => {
   try {
@@ -59,47 +64,44 @@ app.get('/api/rooms', async (req, res) => {
   }
 });
 
+app.get('/api/rooms/:number', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM rooms WHERE room_number = $1', [req.params.number]);
+    res.json(result.rows[0] || {});
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.put('/api/rooms/:number', async (req, res) => {
+  try {
+    const { room_status } = req.body;
+    const result = await pool.query(
+      'UPDATE rooms SET room_status = $1 WHERE room_number = $2 RETURNING *',
+      [room_status, req.params.number]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // ==================== RESERVATIONS ====================
 app.post('/api/reservations', async (req, res) => {
   try {
-    const { full_name, phone_number, email, national_id, room_type, check_in_date, check_out_date, payment_method, payment_amount } = req.body;
+    const {
+      guest_id,
+      room_number,
+      room_type,
+      check_in_date,
+      check_out_date,
+      payment_method
+    } = req.body;
 
-    // Step 1: Check if guest already exists
-    const existingGuest = await pool.query(
-      'SELECT * FROM guests WHERE email = $1 OR phone_number = $2 OR national_id = $3',
-      [email, phone_number, national_id]
-    );
-
-    let guest_id;
-    if (existingGuest.rows.length > 0) {
-      guest_id = existingGuest.rows[0].guest_id;
-    } else {
-      // Create new guest
-      guest_id = 'G-' + uuidv4().slice(0, 6).toUpperCase();
-      await pool.query(
-        'INSERT INTO guests (guest_id, full_name, phone_number, email, national_id) VALUES ($1, $2, $3, $4, $5)',
-        [guest_id, full_name, phone_number, email, national_id]
-      );
-    }
-
-    // Step 2: Find an available room with the requested type
-    const roomResult = await pool.query(
-      'SELECT * FROM rooms WHERE room_type = $1 AND room_status = $2 LIMIT 1',
-      [room_type, 'Available']
-    );
-
-    if (roomResult.rows.length === 0) {
-      return res.status(400).json({ error: 'No available rooms of this type' });
-    }
-
-    const room = roomResult.rows[0];
-    const room_number = room.room_number;
-
-    // Step 3: Create reservation
     const reservation_id = 'RES-' + uuidv4().slice(0, 6).toUpperCase();
     const reservation_date = new Date().toISOString().split('T')[0];
 
-    const resResult = await pool.query(
+    const result = await pool.query(
       `INSERT INTO reservations 
        (reservation_id, guest_id, room_number, room_type, check_in_date, check_out_date, reservation_date, reservation_status)
        VALUES ($1, $2, $3, $4, $5, $6, $7, 'Confirmed')
@@ -107,59 +109,78 @@ app.post('/api/reservations', async (req, res) => {
       [reservation_id, guest_id, room_number, room_type, check_in_date, check_out_date, reservation_date]
     );
 
-    // Step 4: Update room status
+    // Update room status to Occupied
     await pool.query('UPDATE rooms SET room_status = $1 WHERE room_number = $2', ['Occupied', room_number]);
 
-    // Step 5: Create payment record
-    const payment_id = 'PAY-' + uuidv4().slice(0, 6).toUpperCase();
-    const payment_date = new Date().toISOString().split('T')[0];
-
-    await pool.query(
-      `INSERT INTO payments 
-       (payment_id, reservation_id, guest_id, payment_amount, payment_date, payment_method, payment_status)
-       VALUES ($1, $2, $3, $4, $5, $6, 'Fully Paid')`,
-      [payment_id, reservation_id, guest_id, payment_amount, payment_date, payment_method]
-    );
-
-    // Return comprehensive response with all data from database
-    const fullReservation = resResult.rows[0];
-    res.json({
-      ...fullReservation,
-      guest_id: guest_id,
-      full_name: full_name,
-      payment_id: payment_id,
-      payment_amount: payment_amount
-    });
+    res.json(result.rows[0]);
   } catch (err) {
-    console.error('Reservation error:', err);
+    console.error('Error creating reservation:', err);
     res.status(400).json({ error: err.message });
   }
 });
 
 app.get('/api/reservations', async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT 
-        r.reservation_id,
-        r.guest_id,
-        r.room_number,
-        r.room_type,
-        r.check_in_date,
-        r.check_out_date,
-        r.reservation_date,
-        r.reservation_status,
-        g.full_name,
-        g.email,
-        g.phone_number,
-        p.payment_amount,
-        p.payment_method,
-        p.payment_status
-      FROM reservations r
-      LEFT JOIN guests g ON r.guest_id = g.guest_id
-      LEFT JOIN payments p ON r.reservation_id = p.reservation_id
-      ORDER BY r.reservation_date DESC
-    `);
+    const result = await pool.query('SELECT * FROM reservations ORDER BY reservation_date DESC');
     res.json(result.rows);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/api/reservations/lookup/:id', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT r.*, g.full_name, g.email, g.phone_number, p.payment_amount, p.payment_id
+       FROM reservations r
+       JOIN guests g ON r.guest_id = g.guest_id
+       LEFT JOIN payments p ON r.reservation_id = p.reservation_id
+       WHERE r.reservation_id = $1`,
+      [req.params.id]
+    );
+    res.json(result.rows[0] || {});
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.put('/api/reservations/:id', async (req, res) => {
+  try {
+    const { reservation_status, room_number } = req.body;
+    
+    // If cancelling, mark room as available
+    if (reservation_status === 'Cancelled' && room_number) {
+      await pool.query('UPDATE rooms SET room_status = $1 WHERE room_number = $2', ['Available', room_number]);
+    }
+
+    const result = await pool.query(
+      'UPDATE reservations SET reservation_status = $1 WHERE reservation_id = $2 RETURNING *',
+      [reservation_status, req.params.id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.delete('/api/reservations/:id', async (req, res) => {
+  try {
+    // Get reservation to find room number
+    const resResult = await pool.query('SELECT room_number FROM reservations WHERE reservation_id = $1', [req.params.id]);
+    const reservation = resResult.rows[0];
+
+    if (reservation) {
+      // Mark room as available
+      await pool.query('UPDATE rooms SET room_status = $1 WHERE room_number = $2', ['Available', reservation.room_number]);
+    }
+
+    // Delete reservation
+    await pool.query('DELETE FROM reservations WHERE reservation_id = $1', [req.params.id]);
+    
+    // Delete associated payments
+    await pool.query('DELETE FROM payments WHERE reservation_id = $1', [req.params.id]);
+
+    res.json({ success: true });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -185,6 +206,15 @@ app.post('/api/payments', async (req, res) => {
   }
 });
 
+app.get('/api/payments', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM payments ORDER BY payment_date DESC');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // ==================== STATS ====================
 app.get('/api/stats', async (req, res) => {
   try {
@@ -202,53 +232,10 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
-// ==================== STAFF LOGIN ====================
-app.post('/api/staff/login', async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const result = await pool.query(
-      'SELECT * FROM staff WHERE username = $1',
-      [username]
-    );
-
-    if (result.rows.length > 0) {
-      const user = result.rows[0];
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-
-      if (isPasswordValid) {
-        delete user.password; // Remove password before sending response
-        res.json({ success: true, user });
-      } else {
-        res.status(401).json({ success: false, message: 'Invalid credentials' });
-      }
-    } else {
-      res.status(401).json({ success: false, message: 'Invalid credentials' });
-    }
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ==================== STAFF CREATION (FOR PASSWORD HASHING) ====================
-app.post('/api/staff', async (req, res) => {
-  const { username, password, full_name, role } = req.body;
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
-
-    const result = await pool.query(
-      'INSERT INTO staff (username, password, full_name, role) VALUES ($1, $2, $3, $4) RETURNING *',
-      [username, hashedPassword, full_name, role || 'Admin']
-    );
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ==================== START SERVER (ALWAYS AT THE BOTTOM) ====================
-// Explicitly set the port
-const PORT = process.env.PORT || 9001;
+// ==================== START SERVER ====================
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`✓ Server running on port ${PORT}`);
 });
+
+// You need to save this very well

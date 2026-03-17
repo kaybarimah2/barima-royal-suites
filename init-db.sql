@@ -39,43 +39,8 @@ CREATE TABLE payments (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE staff (
-  staff_id VARCHAR(20) PRIMARY KEY,
-  username VARCHAR(50) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,
-  full_name VARCHAR(100) NOT NULL,
-  role VARCHAR(50) DEFAULT 'Admin',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Insert sample rooms
 INSERT INTO rooms (room_number, room_type, price_per_night, room_status) VALUES
 ('101', 'Single', 129, 'Available'),
-('102', 'Single', 129, 'Available'),
-('103', 'Single', 129, 'Available'),
-('104', 'Single', 129, 'Available'),
-('105', 'Single', 129, 'Available'),
-('201', 'Double', 199, 'Available'),
-('202', 'Double', 199, 'Available'),
-('203', 'Double', 199, 'Available'),
-('204', 'Double', 199, 'Available'),
-('205', 'Double', 199, 'Available'),
-('301', 'Deluxe', 299, 'Available'),
-('302', 'Deluxe', 299, 'Available'),
-('303', 'Deluxe', 299, 'Available'),
-('304', 'Deluxe', 299, 'Available'),
-('305', 'Deluxe', 299, 'Available'),
-('401', 'Suite', 499, 'Available'),
-('402', 'Suite', 499, 'Available'),
-('403', 'Suite', 499, 'Available'),
-('404', 'Suite', 499, 'Available'),
-('405', 'Suite', 499, 'Available'),
-('406', 'Suite', 499, 'Available'),
-('407', 'Suite', 499, 'Available'),
-('408', 'Suite', 499, 'Available'),
-('409', 'Suite', 499, 'Available'),
-('410', 'Suite', 499, 'Available');
-
--- Insert default admin credentials
-INSERT INTO staff (staff_id, username, password, full_name, role) VALUES
-('STAFF-001', 'admin', 'admin123', 'Administrator', 'Admin');
+('102', 'Single', 129, 'Occupied'),
+-- ... (add all 25 rooms from your template)
