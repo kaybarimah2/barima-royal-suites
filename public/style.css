@@ -115,3 +115,21 @@ input, select, textarea { font-family: 'Jost', sans-serif; }
   .desktop-nav { display: none !important; }
   .status-badge { padding: 3px 8px !important; font-size: 0.65rem !important; }
 }
+
+/* Add styles for the background slideshow */
+.hero-bg {
+  position: relative;
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  animation: slideShow 25s infinite;
+}
+
+@keyframes slideShow {
+  0% { background-image: url('https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg'); }
+  20% { background-image: url('https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg'); }
+  40% { background-image: url('https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg'); }
+  60% { background-image: url('https://images.pexels.com/photos/164558/pexels-photo-164558.jpeg'); }
+  80% { background-image: url('https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg'); }
+  100% { background-image: url('https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg'); }
+}

@@ -263,3 +263,22 @@ function renderFeaturedRooms() { /* Similar logic for home page */ }
 
 // Initialize on Load
 document.addEventListener('DOMContentLoaded', initializeApp);
+
+// Add JavaScript for dynamic background image slideshow
+const images = [
+  'https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg',
+  'https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg',
+  'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg',
+  'https://images.pexels.com/photos/164558/pexels-photo-164558.jpeg',
+  'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg'
+];
+
+let currentIndex = 0;
+const heroBg = document.querySelector('.hero-bg');
+
+function changeBackground() {
+  currentIndex = (currentIndex + 1) % images.length;
+  heroBg.style.backgroundImage = `url(${images[currentIndex]})`;
+}
+
+setInterval(changeBackground, 5000);
