@@ -5,69 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Barima Royal Suites</title>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="style.css">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&amp;family=Jost:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="/_sdk/data_sdk.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
+  <style>body { box-sizing: border-box; }</style>
  </head>
- <body>
-  <!-- TOAST -->
+ <body><!-- TOAST -->
   <div class="toast card" id="toast" style="min-width:260px;padding:1rem 1.5rem;">
    <p id="toast-msg" style="margin:0;font-size:0.85rem;"></p>
   </div><!-- DELETE CONFIRM MODAL -->
   <div class="confirm-modal" id="confirmModal">
-   <div class="card" style="max-width:380px;width:90%;padding:2rem;text-align:center;">
-    <i data-lucide="alert-triangle" style="width:40px;height:40px;color:var(--gold);margin:0 auto 1rem;display:block;"></i>
+   <div class="card" style="max-width:380px;width:90%;padding:2rem;text-align:center;"><i data-lucide="alert-triangle" style="width:40px;height:40px;color:var(--gold);margin:0 auto 1rem;display:block;"></i>
     <h3 class="font-display" style="font-size:1.4rem;margin:0 0 0.5rem;">Confirm Action</h3>
     <p id="confirmMsg" style="color:var(--muted);font-size:0.85rem;margin:0 0 1.5rem;"></p>
-    <div style="display:flex;gap:0.75rem;justify-content:center;">
-     <button class="btn-outline" style="padding:0.6rem 1.5rem;border-radius:2px;" onclick="closeConfirm()">Cancel</button> <button class="btn-gold" id="confirmBtn" style="padding:0.6rem 1.5rem;border-radius:2px;">Confirm</button>
+    <div style="display:flex;gap:0.75rem;justify-content:center;"><button class="btn-outline" style="padding:0.6rem 1.5rem;border-radius:2px;" onclick="closeConfirm()">Cancel</button> <button class="btn-gold" id="confirmBtn" style="padding:0.6rem 1.5rem;border-radius:2px;">Confirm</button>
     </div>
    </div>
   </div>
-  <div class="app-wrap">
-   <!-- NAV -->
+  <div class="app-wrap"><!-- NAV -->
    <nav style="background:var(--dark);padding:0 2rem;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.3);">
     <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;">
-     <div style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;" onclick="showPage('home')">
-      <i data-lucide="hotel" style="width:22px;height:22px;color:var(--gold);"></i> <span class="font-display" id="nav-hotel-name" style="color:white;font-size:1.3rem;letter-spacing:0.05em;">Barima Royal</span>
+     <div style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;" onclick="showPage('home')"><i data-lucide="hotel" style="width:22px;height:22px;color:var(--gold);"></i> <span class="font-display" id="nav-hotel-name" style="color:white;font-size:1.3rem;letter-spacing:0.05em;">Barima Royal</span>
      </div>
-     <div class="desktop-nav" style="display:flex;gap:2rem;align-items:center;">
-      <span class="nav-link" style="color:#ccc;" onclick="showPage('home')" id="nav-home">Home</span> <span class="nav-link" style="color:#ccc;" onclick="showPage('rooms')" id="nav-rooms">Rooms</span> <span class="nav-link" style="color:#ccc;" onclick="showPage('booking')" id="nav-booking">Book Room</span> <span class="nav-link" style="color:#ccc;" onclick="showPage('myreservation')" id="nav-myreservation">My Reservation</span> <span class="nav-link" style="color:#ccc;" onclick="showPage('contact')" id="nav-contact">Contact</span> <span class="nav-link btn-gold" style="padding:0.4rem 1.2rem;border-radius:2px;" onclick="handleAdminClick()">Admin</span>
+     <div class="desktop-nav" style="display:flex;gap:2rem;align-items:center;"><span class="nav-link" style="color:#ccc;" onclick="showPage('home')" id="nav-home">Home</span> <span class="nav-link" style="color:#ccc;" onclick="showPage('rooms')" id="nav-rooms">Rooms</span> <span class="nav-link" style="color:#ccc;" onclick="showPage('booking')" id="nav-booking">Book Room</span> <span class="nav-link" style="color:#ccc;" onclick="showPage('myreservation')" id="nav-myreservation">My Reservation</span> <span class="nav-link" style="color:#ccc;" onclick="showPage('contact')" id="nav-contact">Contact</span> <span class="nav-link btn-gold" style="padding:0.4rem 1.2rem;border-radius:2px;" onclick="handleAdminClick()">Admin</span>
      </div><button class="mobile-menu-btn" style="background:none;border:none;color:white;cursor:pointer;" onclick="toggleMobileMenu()"> <i data-lucide="menu" style="width:24px;height:24px;"></i> </button>
     </div>
     <div class="mobile-menu" id="mobileMenu" style="padding-bottom:1rem;border-top:1px solid rgba(255,255,255,0.1);margin-top:0;">
-     <div style="display:flex;flex-direction:column;gap:0;padding-top:0.5rem;">
-      <span class="nav-link" style="color:#ccc;padding:0.75rem 0;" onclick="showPage('home');closeMobileMenu()">Home</span> <span class="nav-link" style="color:#ccc;padding:0.75rem 0;" onclick="showPage('rooms');closeMobileMenu()">Rooms</span> <span class="nav-link" style="color:#ccc;padding:0.75rem 0;" onclick="showPage('booking');closeMobileMenu()">Book Room</span> <span class="nav-link" style="color:#ccc;padding:0.75rem 0;" onclick="showPage('myreservation');closeMobileMenu()">My Reservation</span> <span class="nav-link" style="color:#ccc;padding:0.75rem 0;" onclick="showPage('contact');closeMobileMenu()">Contact</span> <span class="nav-link" style="color:#ccc;padding:0.75rem 0;" onclick="handleAdminClick();closeMobileMenu()">Admin Panel</span>
+     <div style="display:flex;flex-direction:column;gap:0;padding-top:0.5rem;"><span class="nav-link" style="color:#ccc;padding:0.75rem 0;" onclick="showPage('home');closeMobileMenu()">Home</span> <span class="nav-link" style="color:#ccc;padding:0.75rem 0;" onclick="showPage('rooms');closeMobileMenu()">Rooms</span> <span class="nav-link" style="color:#ccc;padding:0.75rem 0;" onclick="showPage('booking');closeMobileMenu()">Book Room</span> <span class="nav-link" style="color:#ccc;padding:0.75rem 0;" onclick="showPage('myreservation');closeMobileMenu()">My Reservation</span> <span class="nav-link" style="color:#ccc;padding:0.75rem 0;" onclick="showPage('contact');closeMobileMenu()">Contact</span> <span class="nav-link" style="color:#ccc;padding:0.75rem 0;" onclick="handleAdminClick();closeMobileMenu()">Admin Panel</span>
      </div>
     </div>
    </nav>
-   <div class="main-content">
-    <!-- ==================== HOME PAGE ==================== -->
-    <div class="page active" id="page-home">
-     <!-- Hero Slideshow -->
-    <div class="hero-bg">
-  <div class="hero-slideshow" id="heroSlideshow">
-    <div class="slide-bg active" style="background-image: url('https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg');"></div>
-    <div class="slide-bg" style="background-image: url('https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg');"></div>
-    <div class="slide-bg" style="background-image: url('https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg');"></div>
-    <div class="slide-bg" style="background-image: url('https://images.pexels.com/photos/164558/pexels-photo-164558.jpeg');"></div>
-  </div>
-
-  <!-- Optional overlay (can comment out if you want only images) -->
-  <div class="slide-overlay"></div>
-
-  <div class="hero-content">
-    <p>Welcome to Luxury</p>
-    <h1>Barima Royal Suites</h1>
-    <p>"Where Luxury Meets Comfort"</p>
-    <button onclick="showPage('booking')">Book Your Stay</button>
-    <button onclick="showPage('rooms')">Explore Rooms</button>
-  </div>
-</div>
+   <div class="main-content"><!-- ==================== HOME PAGE ==================== -->
+    <div class="page active" id="page-home"><!-- Hero Slideshow -->
+     <div class="hero-bg">
+      <div class="hero-slideshow" id="heroSlideshow"></div>
+      <div class="slide-overlay"></div>
+      <div class="hero-content">
+       <p style="color:var(--gold);letter-spacing:0.25em;font-size:0.75rem;text-transform:uppercase;margin-bottom:1rem;font-weight:600;animation:fadeInUp 0.8s ease-out;">Welcome to Luxury</p>
+       <h1 class="font-display" id="home-hotel-name" style="color:white;font-size:max(3rem,min(7vw,5rem));font-weight:300;line-height:1.1;margin:0 0 1rem;animation:fadeInUp 0.8s ease-out 0.1s both;">Barima Royal Suites</h1>
+       <div class="section-divider" style="animation:fadeInUp 0.8s ease-out 0.2s both;"></div>
+       <p class="font-display" id="home-tagline" style="color:rgba(255,255,255,0.8);font-size:max(1.1rem,min(3vw,1.4rem));font-weight:300;margin:0 0 2rem;font-style:italic;animation:fadeInUp 0.8s ease-out 0.3s both;">"Where Luxury Meets Comfort"</p>
+       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeInUp 0.8s ease-out 0.5s both;"><button class="btn-gold" style="padding:1rem 2.5rem;border-radius:4px;font-size:0.85rem;box-shadow:0 8px 24px rgba(201,168,76,0.25);transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 32px rgba(201,168,76,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 24px rgba(201,168,76,0.25)'" onclick="showPage('booking')">Book Your Stay</button> <button class="btn-outline" style="padding:1rem 2.5rem;border-radius:4px;font-size:0.85rem;transition:all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" onclick="showPage('rooms')">Explore Rooms</button>
+       </div>
+      </div>
      </div><!-- Featured Rooms on Home -->
      <div style="padding:5rem 2rem;background:var(--surface);">
       <div style="max-width:1200px;margin:0 auto;">
@@ -77,8 +58,7 @@
         <div class="section-divider" style="margin-top:1rem;"></div>
         <p id="available-rooms-counter" style="color:var(--gold);font-size:0.9rem;font-weight:600;letter-spacing:0.05em;margin-top:1rem;">Available Rooms: <span style="font-size:1.1rem;">—</span> / 25</p>
        </div>
-       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;" id="home-rooms-grid">
-        <!-- Featured rooms rendered here -->
+       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;" id="home-rooms-grid"><!-- Featured rooms rendered here -->
        </div>
       </div>
      </div><!-- Stats -->
@@ -111,29 +91,25 @@
        </div>
        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;">
         <div class="card" style="padding:2rem;text-align:center;">
-         <div style="width:56px;height:56px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
-          <i data-lucide="waves" style="width:24px;height:24px;color:var(--gold);"></i>
+         <div style="width:56px;height:56px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;"><i data-lucide="waves" style="width:24px;height:24px;color:var(--gold);"></i>
          </div>
          <h3 class="font-display" style="font-size:1.2rem;margin:0 0 0.5rem;font-weight:500;">Infinity Pool</h3>
          <p style="color:var(--muted);font-size:0.82rem;margin:0;line-height:1.6;">Rooftop pool with panoramic ocean views open year-round.</p>
         </div>
         <div class="card" style="padding:2rem;text-align:center;">
-         <div style="width:56px;height:56px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
-          <i data-lucide="utensils" style="width:24px;height:24px;color:var(--gold);"></i>
+         <div style="width:56px;height:56px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;"><i data-lucide="utensils" style="width:24px;height:24px;color:var(--gold);"></i>
          </div>
          <h3 class="font-display" style="font-size:1.2rem;margin:0 0 0.5rem;font-weight:500;">Fine Dining</h3>
          <p style="color:var(--muted);font-size:0.82rem;margin:0;line-height:1.6;">Award-winning restaurant serving international cuisine.</p>
         </div>
         <div class="card" style="padding:2rem;text-align:center;">
-         <div style="width:56px;height:56px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
-          <i data-lucide="sparkles" style="width:24px;height:24px;color:var(--gold);"></i>
+         <div style="width:56px;height:56px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;"><i data-lucide="sparkles" style="width:24px;height:24px;color:var(--gold);"></i>
          </div>
          <h3 class="font-display" style="font-size:1.2rem;margin:0 0 0.5rem;font-weight:500;">Luxury Spa</h3>
          <p style="color:var(--muted);font-size:0.82rem;margin:0;line-height:1.6;">Full-service spa with massage, sauna, and wellness treatments.</p>
         </div>
         <div class="card" style="padding:2rem;text-align:center;">
-         <div style="width:56px;height:56px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
-          <i data-lucide="wifi" style="width:24px;height:24px;color:var(--gold);"></i>
+         <div style="width:56px;height:56px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;"><i data-lucide="wifi" style="width:24px;height:24px;color:var(--gold);"></i>
          </div>
          <h3 class="font-display" style="font-size:1.2rem;margin:0 0 0.5rem;font-weight:500;">High-Speed WiFi</h3>
          <p style="color:var(--muted);font-size:0.82rem;margin:0;line-height:1.6;">Complimentary gigabit WiFi throughout the entire property.</p>
@@ -152,8 +128,7 @@
       <h1 class="font-display" style="color:white;font-size:2.8rem;font-weight:300;margin:0.5rem 0 0;">Our Rooms &amp; Suites</h1>
      </div>
      <div style="padding:4rem 2rem;">
-      <div style="max-width:1100px;margin:0 auto;" id="rooms-grid">
-       <!-- Rooms rendered by JS -->
+      <div style="max-width:1100px;margin:0 auto;" id="rooms-grid"><!-- Rooms rendered by JS -->
       </div>
      </div>
     </div><!-- ==================== BOOKING PAGE ==================== -->
@@ -167,48 +142,37 @@
        <div class="card" style="padding:2.5rem;" id="booking-form-container">
         <h2 class="font-display" style="font-size:1.8rem;font-weight:400;margin:0 0 0.25rem;">Reservation Details</h2>
         <p style="color:var(--muted);font-size:0.85rem;margin:0 0 2rem;">Fill in your details to complete the reservation.</p>
-        <div id="booking-limit-warning" style="display:none;background:#fee2e2;border:1px solid #fca5a5;border-radius:4px;padding:1rem;margin-bottom:1.5rem;color:#991b1b;font-size:0.85rem;">
-         <i data-lucide="alert-circle" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px;"></i> Maximum reservation limit reached (999). Please contact us directly.
+        <div id="booking-limit-warning" style="display:none;background:#fee2e2;border:1px solid #fca5a5;border-radius:4px;padding:1rem;margin-bottom:1.5rem;color:#991b1b;font-size:0.85rem;"><i data-lucide="alert-circle" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px;"></i> Maximum reservation limit reached (999). Please contact us directly.
         </div>
         <form id="bookingForm" onsubmit="submitBooking(event)">
          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
-          <div style="grid-column:1/-1;">
-           <label for="guestName" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Guest Name *</label> <input type="text" id="guestName" required placeholder="John Smith" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
+          <div style="grid-column:1/-1;"><label for="guestName" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Guest Name *</label> <input type="text" id="guestName" required placeholder="John Smith" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
           </div>
-          <div>
-           <label for="guestEmail" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Email Address *</label> <input type="email" id="guestEmail" required placeholder="john@example.com" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
+          <div><label for="guestEmail" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Email Address *</label> <input type="email" id="guestEmail" required placeholder="john@example.com" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
           </div>
-          <div>
-           <label for="guestPhone" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Phone Number *</label> <input type="tel" id="guestPhone" required placeholder="+233XXXXXXXXX" inputmode="numeric" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'" title="Format: +233XXXXXXXXX">
+          <div><label for="guestPhone" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Phone Number *</label> <input type="tel" id="guestPhone" required placeholder="+233XXXXXXXXX" inputmode="numeric" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'" title="Format: +233XXXXXXXXX">
            <p id="phoneError" style="color:#991b1b;font-size:0.75rem;margin:0.25rem 0 0;display:none;">Invalid phone number format.</p>
           </div>
-          <div>
-           <label for="guestNationalId" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Ghana ID *</label> <input type="text" id="guestNationalId" required placeholder="GHA-XXXXXXXXX-X" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0';validateIdFormat()" title="Format: GHA-XXXXXXXXX-X" oninput="validateIdInput()">
+          <div><label for="guestNationalId" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Ghana ID *</label> <input type="text" id="guestNationalId" required placeholder="GHA-XXXXXXXXX-X" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0';validateIdFormat()" title="Format: GHA-XXXXXXXXX-X" oninput="validateIdInput()">
            <p id="idError" style="color:#991b1b;font-size:0.75rem;margin:0.25rem 0 0;display:none;">Must be GHA-XXXXXXXXX-X format</p>
           </div>
-          <div>
-           <label for="roomType" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Room Type *</label> <select id="roomType" required style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;background:white;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'"> <option value="">Select room type</option> <option value="Single">Single — $129/night</option> <option value="Double">Double — $199/night</option> <option value="Deluxe">Deluxe — $299/night</option> <option value="Suite">Suite — $499/night</option> </select>
+          <div><label for="roomType" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Room Type *</label> <select id="roomType" required style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;background:white;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'"> <option value="">Select room type</option> <option value="Single">Single — $129/night</option> <option value="Double">Double — $199/night</option> <option value="Deluxe">Deluxe — $299/night</option> <option value="Suite">Suite — $499/night</option> </select>
           </div>
-          <div>
-           <label for="checkIn" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Check-in Date *</label> <input type="date" id="checkIn" required style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
+          <div><label for="checkIn" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Check-in Date *</label> <input type="date" id="checkIn" required style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
           </div>
-          <div>
-           <label for="checkOut" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Check-out Date *</label> <input type="date" id="checkOut" required style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
+          <div><label for="checkOut" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Check-out Date *</label> <input type="date" id="checkOut" required style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
           </div>
-          <div>
-           <label for="paymentMethod" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Payment Method *</label> <select id="paymentMethod" required style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;background:white;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'"> <option value="">Select payment method</option> <option value="Card">Card</option> <option value="Cash">Cash</option> <option value="Mobile Payment">Mobile Payment</option> </select>
+          <div><label for="paymentMethod" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Payment Method *</label> <select id="paymentMethod" required style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;background:white;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'"> <option value="">Select payment method</option> <option value="Card">Card</option> <option value="Cash">Cash</option> <option value="Mobile Payment">Mobile Payment</option> </select>
           </div>
          </div>
          <div id="booking-price-preview" style="display:none;background:#f8f5ee;border:1px solid rgba(201,168,76,0.3);border-radius:2px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-           <span style="color:var(--muted);font-size:0.82rem;" id="nights-label">0 nights</span> <span class="font-display" style="color:var(--gold);font-size:1.3rem;font-weight:600;" id="total-price">$0</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span style="color:var(--muted);font-size:0.82rem;" id="nights-label">0 nights</span> <span class="font-display" style="color:var(--gold);font-size:1.3rem;font-weight:600;" id="total-price">$0</span>
           </div>
          </div><button type="submit" class="btn-gold" id="bookingSubmitBtn" style="width:100%;padding:1rem;border-radius:2px;font-size:0.85rem;"> <span id="bookingBtnText">Confirm Reservation</span> </button>
         </form>
        </div><!-- Confirmation -->
        <div class="card" id="booking-confirmation" style="padding:2.5rem;display:none;text-align:center;">
-        <div style="width:64px;height:64px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;">
-         <i data-lucide="check" style="width:32px;height:32px;color:#065f46;"></i>
+        <div style="width:64px;height:64px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;"><i data-lucide="check" style="width:32px;height:32px;color:#065f46;"></i>
         </div>
         <h2 class="font-display" style="font-size:2rem;font-weight:400;margin:0 0 0.5rem;">Reservation Confirmed!</h2>
         <p style="color:var(--muted);font-size:0.85rem;margin:0 0 2rem;">Your booking has been successfully created. Please save your Reservation ID.</p>
@@ -240,8 +204,7 @@
           </div>
          </div>
         </div>
-        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-         <button class="btn-gold" style="padding:0.75rem 2rem;border-radius:2px;" onclick="showPage('myreservation')">View My Reservation</button> <button class="btn-outline" style="padding:0.75rem 2rem;border-radius:2px;" onclick="resetBookingForm()">New Booking</button>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;"><button class="btn-gold" style="padding:0.75rem 2rem;border-radius:2px;" onclick="showPage('myreservation')">View My Reservation</button> <button class="btn-outline" style="padding:0.75rem 2rem;border-radius:2px;" onclick="resetBookingForm()">New Booking</button>
         </div>
        </div>
       </div>
@@ -258,11 +221,9 @@
         <h2 class="font-display" style="font-size:1.6rem;font-weight:400;margin:0 0 0.25rem;">Look Up Your Booking</h2>
         <p style="color:var(--muted);font-size:0.85rem;margin:0 0 1.5rem;">Enter your Reservation ID and email to view your booking details.</p>
         <form onsubmit="lookupReservation(event)">
-         <div style="margin-bottom:1rem;">
-          <label for="lookupId" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Reservation ID *</label> <input type="text" id="lookupId" required placeholder="RES-XXXXXX" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
+         <div style="margin-bottom:1rem;"><label for="lookupId" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Reservation ID *</label> <input type="text" id="lookupId" required placeholder="RES-XXXXXX" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
          </div>
-         <div style="margin-bottom:1.5rem;">
-          <label for="lookupEmail" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Email Address *</label> <input type="email" id="lookupEmail" required placeholder="your@email.com" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
+         <div style="margin-bottom:1.5rem;"><label for="lookupEmail" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Email Address *</label> <input type="email" id="lookupEmail" required placeholder="your@email.com" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
          </div><button type="submit" class="btn-gold" style="width:100%;padding:0.9rem;border-radius:2px;">Find My Reservation</button>
         </form>
         <div id="lookup-error" style="display:none;margin-top:1rem;background:#fee2e2;border:1px solid #fca5a5;border-radius:2px;padding:0.75rem 1rem;color:#991b1b;font-size:0.84rem;"></div>
@@ -323,8 +284,7 @@
         <h2 class="font-display" style="font-size:2rem;font-weight:400;margin:0 0 1.5rem;">We're Here for You</h2>
         <div style="display:flex;flex-direction:column;gap:1.5rem;">
          <div style="display:flex;gap:1rem;align-items:flex-start;">
-          <div style="width:44px;height:44px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-           <i data-lucide="map-pin" style="width:18px;height:18px;color:var(--gold);"></i>
+          <div style="width:44px;height:44px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="map-pin" style="width:18px;height:18px;color:var(--gold);"></i>
           </div>
           <div>
            <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.2rem;text-transform:uppercase;letter-spacing:0.05em;">Location</p>
@@ -332,8 +292,7 @@
           </div>
          </div>
          <div style="display:flex;gap:1rem;align-items:flex-start;">
-          <div style="width:44px;height:44px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-           <i data-lucide="phone" style="width:18px;height:18px;color:var(--gold);"></i>
+          <div style="width:44px;height:44px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="phone" style="width:18px;height:18px;color:var(--gold);"></i>
           </div>
           <div>
            <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.2rem;text-transform:uppercase;letter-spacing:0.05em;">Phone</p>
@@ -341,8 +300,7 @@
           </div>
          </div>
          <div style="display:flex;gap:1rem;align-items:flex-start;">
-          <div style="width:44px;height:44px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-           <i data-lucide="mail" style="width:18px;height:18px;color:var(--gold);"></i>
+          <div style="width:44px;height:44px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="mail" style="width:18px;height:18px;color:var(--gold);"></i>
           </div>
           <div>
            <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.2rem;text-transform:uppercase;letter-spacing:0.05em;">Email</p>
@@ -350,8 +308,7 @@
           </div>
          </div>
          <div style="display:flex;gap:1rem;align-items:flex-start;">
-          <div style="width:44px;height:44px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-           <i data-lucide="clock" style="width:18px;height:18px;color:var(--gold);"></i>
+          <div style="width:44px;height:44px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="clock" style="width:18px;height:18px;color:var(--gold);"></i>
           </div>
           <div>
            <p style="font-weight:600;font-size:0.85rem;margin:0 0 0.2rem;text-transform:uppercase;letter-spacing:0.05em;">Front Desk Hours</p>
@@ -362,18 +319,14 @@
        </div>
        <div class="card" style="padding:2rem;">
         <h3 class="font-display" style="font-size:1.5rem;margin:0 0 1.25rem;font-weight:400;">Send a Message</h3>
-        <div id="contact-success" style="display:none;background:#d1fae5;border:1px solid #6ee7b7;border-radius:2px;padding:1rem;margin-bottom:1rem;color:#065f46;font-size:0.85rem;text-align:center;">
-         <i data-lucide="check-circle" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px;"></i> Thank you! We'll get back to you within 24 hours.
+        <div id="contact-success" style="display:none;background:#d1fae5;border:1px solid #6ee7b7;border-radius:2px;padding:1rem;margin-bottom:1rem;color:#065f46;font-size:0.85rem;text-align:center;"><i data-lucide="check-circle" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px;"></i> Thank you! We'll get back to you within 24 hours.
         </div>
         <form onsubmit="sendContactMsg(event)" id="contactForm">
-         <div style="margin-bottom:1rem;">
-          <label for="cName" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Your Name</label> <input type="text" id="cName" placeholder="John Smith" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
+         <div style="margin-bottom:1rem;"><label for="cName" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Your Name</label> <input type="text" id="cName" placeholder="John Smith" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
          </div>
-         <div style="margin-bottom:1rem;">
-          <label for="cEmail" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Email</label> <input type="email" id="cEmail" placeholder="john@example.com" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
+         <div style="margin-bottom:1rem;"><label for="cEmail" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Email</label> <input type="email" id="cEmail" placeholder="john@example.com" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
          </div>
-         <div style="margin-bottom:1.25rem;">
-          <label for="cMessage" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Message</label> <textarea id="cMessage" rows="4" placeholder="How can we help you?" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;resize:vertical;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'"></textarea>
+         <div style="margin-bottom:1.25rem;"><label for="cMessage" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Message</label> <textarea id="cMessage" rows="4" placeholder="How can we help you?" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;resize:vertical;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'"></textarea>
          </div><button type="submit" class="btn-gold" style="width:100%;padding:0.9rem;border-radius:2px;">Send Message</button>
         </form>
        </div>
@@ -384,18 +337,15 @@
      <div id="admin-login-container" style="display:flex;align-items:center;justify-content:center;min-height:100%;background:var(--dark);">
       <div class="card" style="padding:3rem;max-width:380px;width:90%;">
        <div style="text-align:center;margin-bottom:2rem;">
-        <div style="width:64px;height:64px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;">
-         <i data-lucide="lock" style="width:32px;height:32px;color:var(--gold);"></i>
+        <div style="width:64px;height:64px;background:rgba(201,168,76,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;"><i data-lucide="lock" style="width:32px;height:32px;color:var(--gold);"></i>
         </div>
         <h1 class="font-display" style="font-size:1.8rem;margin:0 0 0.5rem;font-weight:400;">Admin Access</h1>
         <p style="color:var(--muted);font-size:0.85rem;margin:0;">Please log in to access the admin dashboard</p>
        </div>
        <form onsubmit="adminLogin(event)" id="adminLoginForm">
-        <div style="margin-bottom:1.25rem;">
-         <label for="adminUsername" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Username</label> <input type="text" id="adminUsername" required placeholder="Enter username" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
+        <div style="margin-bottom:1.25rem;"><label for="adminUsername" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Username</label> <input type="text" id="adminUsername" required placeholder="Enter username" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
         </div>
-        <div style="margin-bottom:1.75rem;">
-         <label for="adminPassword" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Password</label> <input type="password" id="adminPassword" required placeholder="Enter password" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
+        <div style="margin-bottom:1.75rem;"><label for="adminPassword" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Password</label> <input type="password" id="adminPassword" required placeholder="Enter password" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
         </div>
         <div id="admin-login-error" style="display:none;background:#fee2e2;border:1px solid #fca5a5;border-radius:2px;padding:0.75rem 1rem;margin-bottom:1rem;color:#991b1b;font-size:0.84rem;text-align:center;"></div><button type="submit" class="btn-gold" style="width:100%;padding:0.9rem;border-radius:2px;">Log In</button>
        </form>
@@ -409,13 +359,10 @@
        </div><button class="btn-outline" style="padding:0.6rem 1.5rem;border-radius:2px;align-self:flex-start;" onclick="adminLogout()">Logout</button>
       </div>
       <div style="padding:2rem;">
-       <div style="max-width:1200px;margin:0 auto;">
-        <!-- Stats -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.25rem;margin-bottom:2rem;" id="admin-stats">
-         <!-- rendered by JS -->
+       <div style="max-width:1200px;margin:0 auto;"><!-- Stats -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.25rem;margin-bottom:2rem;" id="admin-stats"><!-- rendered by JS -->
         </div><!-- Tabs -->
-        <div style="display:flex;gap:0;border-bottom:2px solid #e2e8f0;margin-bottom:2rem;">
-         <button class="admin-tab active" id="tab-reservations" onclick="showAdminTab('reservations')" style="padding:0.75rem 1.5rem;border:none;background:none;cursor:pointer;font-family:'Jost',sans-serif;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold);border-bottom:2px solid var(--gold);margin-bottom:-2px;">All Reservations</button> <button class="admin-tab" id="tab-rooms" onclick="showAdminTab('rooms')" style="padding:0.75rem 1.5rem;border:none;background:none;cursor:pointer;font-family:'Jost',sans-serif;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;">Room Management</button>
+        <div style="display:flex;gap:0;border-bottom:2px solid #e2e8f0;margin-bottom:2rem;"><button class="admin-tab active" id="tab-reservations" onclick="showAdminTab('reservations')" style="padding:0.75rem 1.5rem;border:none;background:none;cursor:pointer;font-family:'Jost',sans-serif;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold);border-bottom:2px solid var(--gold);margin-bottom:-2px;">All Reservations</button> <button class="admin-tab" id="tab-rooms" onclick="showAdminTab('rooms')" style="padding:0.75rem 1.5rem;border:none;background:none;cursor:pointer;font-family:'Jost',sans-serif;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;">Room Management</button>
         </div><!-- Reservations tab -->
         <div id="admin-reservations-panel">
          <div class="card" style="overflow:hidden;">
@@ -440,15 +387,13 @@
             </tbody>
            </table>
           </div>
-          <div id="no-reservations" style="text-align:center;padding:3rem;color:var(--muted);display:none;">
-           <i data-lucide="calendar-x" style="width:40px;height:40px;margin:0 auto 1rem;display:block;opacity:0.4;"></i>
+          <div id="no-reservations" style="text-align:center;padding:3rem;color:var(--muted);display:none;"><i data-lucide="calendar-x" style="width:40px;height:40px;margin:0 auto 1rem;display:block;opacity:0.4;"></i>
            <p style="margin:0;font-size:0.9rem;">No reservations found.</p>
           </div>
          </div>
         </div><!-- Rooms tab -->
         <div id="admin-rooms-panel" style="display:none;">
-         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;" id="admin-rooms-grid">
-          <!-- rendered by JS -->
+         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;" id="admin-rooms-grid"><!-- rendered by JS -->
          </div>
         </div>
        </div>
@@ -461,969 +406,4 @@
     <p style="margin:0;">© 2024 Barima Royal Suites. All rights reserved. Luxury Hospitality Since 1995.</p>
    </footer>
   </div><!-- end app-wrap -->
-  <style>
-    /* ==================== COLORS & VARIABLES ==================== */
-    :root {
-      --gold: #C9A84C;
-      --dark: #1a1a2e;
-      --surface: #f8f5ee;
-      --muted: #6b7280;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      background: var(--surface);
-      font-family: 'Jost', sans-serif;
-      color: #333;
-    }
-
-    .app-wrap {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .main-content {
-      flex: 1;
-      overflow-y: auto;
-    }
-
-    /* ==================== TYPOGRAPHY ==================== */
-    .font-display {
-      font-family: 'Cormorant Garamond', serif;
-    }
-
-    /* ==================== BUTTONS ==================== */
-    .btn-gold {
-      background: var(--gold);
-      color: var(--dark);
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .btn-gold:hover {
-      background: #d4b870;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(201, 168, 76, 0.3);
-    }
-
-    .btn-gold:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 1px solid #e2e8f0;
-      color: #333;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-
-    .btn-outline:hover {
-      border-color: var(--gold);
-      color: var(--gold);
-    }
-
-    /* ==================== CARDS ==================== */
-    .card {
-      background: white;
-      border-radius: 4px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      transition: box-shadow 0.3s ease;
-    }
-
-    .card:hover {
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-    }
-
-    /* ==================== PAGES ==================== */
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    /* ==================== HERO ==================== */
-    .hero-bg {
-      position: relative;
-      height: 600px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      overflow: hidden;
-    }
-
-    .hero-slideshow {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-    }
-
-    .slide-bg {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-    }
-
-    .slide-bg.active {
-      opacity: 1;
-    }
-
-    .slide-overlay {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: rgba(26, 26, 46, 0.4);
-      z-index: 1;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 800px;
-      padding: 2rem;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* ==================== TOAST ==================== */
-    .toast {
-      position: fixed;
-      bottom: -100px;
-      left: 50%;
-      transform: translateX(-50%);
-      transition: bottom 0.3s ease;
-      z-index: 1000;
-      background: #dbeafe;
-      border-radius: 4px;
-    }
-
-    .toast.show {
-      bottom: 20px;
-    }
-
-    /* ==================== MODALS ==================== */
-    .confirm-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .confirm-modal.open {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    /* ==================== MOBILE MENU ==================== */
-    .mobile-menu {
-      display: none;
-    }
-
-    .mobile-menu.open {
-      display: block;
-    }
-
-    .mobile-menu-btn {
-      display: none;
-    }
-
-    @media (max-width: 768px) {
-      .desktop-nav {
-        display: none !important;
-      }
-
-      .mobile-menu-btn {
-        display: block;
-      }
-
-      .hero-bg {
-        height: 400px;
-      }
-
-      .page {
-        padding-top: 1rem;
-      }
-    }
-
-    /* ==================== ROOM CARDS ==================== */
-    .room-card-home {
-      border-radius: 4px;
-      overflow: hidden;
-      transition: transform 0.3s ease;
-    }
-
-    .room-card-home:hover {
-      transform: translateY(-4px);
-    }
-
-    .room-card-home-img {
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      font-size: 3rem;
-      color: white;
-    }
-
-    .room-card-home-img.booked {
-      opacity: 0.7;
-    }
-
-    .room-card-home-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.3);
-    }
-
-    .room-card-home-status {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      z-index: 2;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 0.35rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .room-available {
-      background: #d1fae5;
-      color: #065f46;
-    }
-
-    .room-occupied {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .status-confirmed {
-      background: #d1fae5;
-      color: #065f46;
-    }
-
-    .status-pending {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .room-card-home-content {
-      background: white;
-      padding: 1rem;
-    }
-
-    .room-card-home-type {
-      font-weight: 600;
-      margin: 0 0 0.25rem;
-      font-size: 0.95rem;
-    }
-
-    .room-card-home-price {
-      color: var(--gold);
-      font-weight: 600;
-      margin: 0;
-      font-size: 0.9rem;
-    }
-
-    /* ==================== DIVIDER ==================== */
-    .section-divider {
-      width: 40px;
-      height: 2px;
-      background: var(--gold);
-      margin: 0 auto;
-    }
-
-    /* ==================== ADMIN TABLE ==================== */
-    table {
-      width: 100%;
-    }
-
-    th {
-      text-align: left;
-    }
-
-    td {
-      padding: 0.75rem 1rem;
-    }
-
-    /* ==================== NAV LINKS ==================== */
-    .nav-link {
-      cursor: pointer;
-      transition: color 0.2s ease;
-    }
-
-    .nav-link:hover {
-      color: var(--gold) !important;
-    }
-
-    .nav-link.active {
-      color: var(--gold) !important;
-    }
-
-    .admin-tab {
-      cursor: pointer;
-    }
-
-    .admin-tab.active {
-      color: var(--gold);
-      border-bottom-color: var(--gold);
-    }
-  </style>
-  <script>
-    // ==================== CONFIG & DATA ==================== 
-    const ROOM_TEMPLATES = [
-      { type: 'Single', price: 129, emoji: '🛏️', capacity: 1 },
-      { type: 'Double', price: 199, emoji: '🛏️🛏️', capacity: 2 },
-      { type: 'Deluxe', price: 299, emoji: '👑', capacity: 2 },
-      { type: 'Suite', price: 499, emoji: '🏰', capacity: 4 }
-    ];
-
-    const HERO_IMAGES = [
-      { gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', label: 'Ocean View' },
-      { gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', label: 'Sunset Lounge' },
-      { gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', label: 'Pool Area' },
-      { gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', label: 'Garden' }
-    ];
-
-    let currentSlide = 0;
-    let allReservations = [];
-    let currentUser = null;
-    let reservationSearchTerm = '';
-
-    // ==================== INITIALIZATION ==================== 
-    async function initializeApp() {
-      try {
-        // Initialize Element SDK
-        if (window.elementSdk) {
-          const config = {
-            hotel_name: 'Barima Royal Suites',
-            hotel_tagline: 'Where Luxury Meets Comfort',
-            hotel_location: '123 Ocean Drive, Miami Beach',
-            contact_phone: '+1 (800) 555-0190',
-            contact_email: 'reservations@barimaroyalsuites.com'
-          };
-
-          window.elementSdk.init({
-            defaultConfig: config,
-            onConfigChange: async (cfg) => {
-              document.getElementById('nav-hotel-name').textContent = cfg.hotel_name;
-              document.getElementById('home-hotel-name').textContent = cfg.hotel_name;
-              document.getElementById('home-tagline').textContent = `"${cfg.hotel_tagline}"`;
-              document.getElementById('contact-location').textContent = cfg.hotel_location;
-              document.getElementById('contact-phone').textContent = cfg.contact_phone;
-              document.getElementById('contact-email').textContent = cfg.contact_email;
-              document.getElementById('footer-hotel-name').textContent = cfg.hotel_name;
-            },
-            mapToCapabilities: () => ({
-              recolorables: [],
-              borderables: [],
-              fontEditable: undefined,
-              fontSizeable: undefined
-            }),
-            mapToEditPanelValues: (cfg) => new Map([
-              ['hotel_name', cfg.hotel_name],
-              ['hotel_tagline', cfg.hotel_tagline],
-              ['hotel_location', cfg.hotel_location],
-              ['contact_phone', cfg.contact_phone],
-              ['contact_email', cfg.contact_email]
-            ])
-          });
-        }
-
-        // Initialize Data SDK
-        if (window.dataSdk) {
-          const handler = {
-            onDataChanged: (data) => {
-              allReservations = data.filter(r => r.record_type === 'reservation');
-              const rooms = data.filter(r => r.record_type === 'room');
-              renderAllData(rooms);
-            }
-          };
-
-          const result = await window.dataSdk.init(handler);
-          if (!result.isOk) {
-            console.error('Data SDK init failed');
-          }
-        }
-
-        // Initialize hero slideshow
-        initHeroSlideshow();
-        renderRoomsGrid();
-        renderAdminStats();
-        lucide.createIcons();
-      } catch (err) {
-        console.error('Init error:', err);
-      }
-    }
-
-    // ==================== HERO SLIDESHOW ==================== 
-    function initHeroSlideshow() {
-      const slideshow = document.getElementById('heroSlideshow');
-      slideshow.innerHTML = '';
-
-      HERO_IMAGES.forEach((img, idx) => {
-        const slide = document.createElement('div');
-        slide.className = 'slide-bg' + (idx === 0 ? ' active' : '');
-        slide.style.background = img.gradient;
-        slideshow.appendChild(slide);
-      });
-
-      setInterval(() => {
-        const slides = document.querySelectorAll('.slide-bg');
-        slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
-      }, 5000);
-    }
-
-    // ==================== ROOM RENDERING ==================== 
-    function renderRoomsGrid() {
-      const grid = document.getElementById('rooms-grid');
-      grid.innerHTML = ROOM_TEMPLATES.map(room => `
-        <div class="card" style="padding:2rem;border-radius:4px;">
-          <div style="text-align:center;margin-bottom:1.5rem;">
-            <div style="font-size:3rem;margin-bottom:1rem;">${room.emoji}</div>
-            <h3 class="font-display" style="font-size:1.6rem;margin:0 0 0.5rem;font-weight:400;">${room.type} Room</h3>
-            <div class="section-divider" style="margin:1rem auto;"></div>
-          </div>
-          <ul style="list-style:none;padding:0;margin:0 0 1.5rem;color:var(--muted);font-size:0.85rem;line-height:1.8;">
-            <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Capacity: ${room.capacity} ${room.capacity > 1 ? 'guests' : 'guest'}</li>
-            <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Premium amenities</li>
-            <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Free WiFi included</li>
-            <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Daily housekeeping</li>
-          </ul>
-          <div style="background:#f8f5ee;border-radius:2px;padding:1rem;text-align:center;margin-bottom:1.5rem;">
-            <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 0.25rem;">Starting from</p>
-            <p class="font-display" style="color:var(--gold);font-size:1.8rem;margin:0;font-weight:600;">$${room.price}</p>
-            <p style="color:var(--muted);font-size:0.75rem;margin:0;">per night</p>
-          </div>
-          <button class="btn-gold" style="width:100%;padding:0.85rem;border-radius:2px;border:none;cursor:pointer;font-weight:600;transition:all 0.3s ease;" onclick="showPage('booking');document.getElementById('roomType').value='${room.type}';">Book Now</button>
-        </div>
-      `).join('');
-      lucide.createIcons();
-    }
-
-    function renderAllData(rooms) {
-      // Update home rooms counter
-      const available = rooms.filter(r => r.room_status === 'Available').length;
-      document.getElementById('available-rooms-counter').innerHTML = `Available Rooms: <span style="font-size:1.1rem;">${available}</span> / 25`;
-
-      // Home featured rooms
-      const homeGrid = document.getElementById('home-rooms-grid');
-      if (homeGrid) {
-        homeGrid.innerHTML = ROOM_TEMPLATES.map(template => {
-          const availableCount = rooms.filter(r => r.room_type === template.type && r.room_status === 'Available').length;
-          const status = availableCount > 0 ? 'Available' : 'Booked';
-          return `
-            <div class="room-card-home card" style="border-radius:4px;overflow:hidden;">
-              <div class="room-card-home-img" style="background:linear-gradient(135deg,${status === 'Available' ? '#43e97b,#38f9d7' : '#f5576c,#f093fb'});">
-                <div class="room-card-home-overlay"></div>
-                <div class="room-card-home-status">
-                  <span class="status-badge ${status === 'Available' ? 'room-available' : 'room-occupied'}">${status}</span>
-                </div>
-                <span style="position:relative;z-index:1;">${template.emoji}</span>
-              </div>
-              <div class="room-card-home-content">
-                <p class="room-card-home-type">${template.type}</p>
-                <p class="room-card-home-price">$${template.price}/night</p>
-              </div>
-            </div>
-          `;
-        }).join('');
-        lucide.createIcons();
-      }
-
-      // Admin rooms grid
-      const adminGrid = document.getElementById('admin-rooms-grid');
-      if (adminGrid) {
-        adminGrid.innerHTML = rooms.map(room => `
-          <div class="card" style="padding:1.5rem;border-radius:4px;">
-            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:1rem;">
-              <div>
-                <p style="font-weight:600;margin:0 0 0.25rem;font-size:0.9rem;">Room ${room.room_number}</p>
-                <p style="color:var(--muted);font-size:0.8rem;margin:0;">${room.room_type}</p>
-              </div>
-              <span class="status-badge ${room.room_status === 'Available' ? 'room-available' : 'room-occupied'}">${room.room_status}</span>
-            </div>
-            <p style="color:var(--muted);font-size:0.75rem;margin:0.5rem 0;"><strong>Rate:</strong> $${room.price_per_night}/night</p>
-            <button class="btn-outline" style="width:100%;padding:0.6rem;border-radius:2px;margin-top:1rem;font-size:0.8rem;border:1px solid #e2e8f0;" onclick="updateRoomStatus('${room.room_number}', '${room.room_status === 'Available' ? 'Occupied' : 'Available'}')">
-              Mark as ${room.room_status === 'Available' ? 'Occupied' : 'Available'}
-            </button>
-          </div>
-        `).join('');
-        lucide.createIcons();
-      }
-    }
-
-    // ==================== RESERVATIONS TABLE ==================== 
-    function renderReservationsTable() {
-      const tbody = document.getElementById('reservations-tbody');
-      const noReservations = document.getElementById('no-reservations');
-
-      let filtered = allReservations;
-      if (reservationSearchTerm) {
-        const term = reservationSearchTerm.toLowerCase();
-        filtered = allReservations.filter(r =>
-          r.full_name?.toLowerCase().includes(term) ||
-          r.reservation_id?.toLowerCase().includes(term) ||
-          r.email?.toLowerCase().includes(term)
-        );
-      }
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = '';
-        noReservations.style.display = 'block';
-        return;
-      }
-
-      noReservations.style.display = 'none';
-      tbody.innerHTML = filtered.map(res => `
-        <tr style="border-bottom:1px solid #f1f0ed;">
-          <td style="padding:0.75rem 1rem;font-size:0.8rem;font-weight:600;color:var(--gold);">${res.reservation_id || 'N/A'}</td>
-          <td style="padding:0.75rem 1rem;"><p style="margin:0;font-size:0.85rem;font-weight:500;">${res.full_name || 'N/A'}</p><p style="margin:0;font-size:0.75rem;color:var(--muted);">${res.email || 'N/A'}</p></td>
-          <td style="padding:0.75rem 1rem;font-size:0.85rem;">${res.room_type || 'N/A'}</td>
-          <td style="padding:0.75rem 1rem;font-size:0.85rem;white-space:nowrap;">${formatDate(res.check_in_date)}</td>
-          <td style="padding:0.75rem 1rem;font-size:0.85rem;white-space:nowrap;">${formatDate(res.check_out_date)}</td>
-          <td style="padding:0.75rem 1rem;font-size:0.85rem;font-weight:600;color:var(--gold);">$${res.payment_amount || '0'}</td>
-          <td style="padding:0.75rem 1rem;"><span class="status-badge status-${res.reservation_status?.toLowerCase() || 'pending'}">${res.reservation_status || 'Pending'}</span></td>
-          <td style="padding:0.75rem 1rem;"><button class="btn-outline" style="padding:0.4rem 0.75rem;font-size:0.75rem;border:1px solid #e2e8f0;border-radius:2px;cursor:pointer;" onclick="openConfirmDelete('${res.__backendId}', 'reservation')"><i data-lucide="trash-2" style="width:14px;height:14px;display:inline;"></i></button></td>
-        </tr>
-      `).join('');
-      lucide.createIcons();
-    }
-
-    function filterReservations() {
-      const searchInput = document.getElementById('searchInput');
-      reservationSearchTerm = searchInput.value;
-      renderReservationsTable();
-    }
-
-    // ==================== ADMIN FUNCTIONS ==================== 
-    function renderAdminStats() {
-      const stats = document.getElementById('admin-stats');
-      if (stats) {
-        stats.innerHTML = `
-          <div class="card" style="padding:1.5rem;text-align:center;border-radius:4px;">
-            <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;font-weight:600;">0</p>
-            <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;margin:0.5rem 0 0;">Total Reservations</p>
-          </div>
-          <div class="card" style="padding:1.5rem;text-align:center;border-radius:4px;">
-            <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;font-weight:600;">0</p>
-            <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;margin:0.5rem 0 0;">Available Rooms</p>
-          </div>
-          <div class="card" style="padding:1.5rem;text-align:center;border-radius:4px;">
-            <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;font-weight:600;">$0</p>
-            <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;margin:0.5rem 0 0;">Total Revenue</p>
-          </div>
-        `;
-      }
-    }
-
-    async function updateRoomStatus(roomNumber, newStatus) {
-      if (!window.dataSdk) return;
-      const room = allReservations.find(r => r.room_number === roomNumber && r.record_type === 'room');
-      if (!room) return;
-
-      const updated = { ...room, room_status: newStatus };
-      const result = await window.dataSdk.update(updated);
-      if (result.isOk) {
-        showToast(`Room ${roomNumber} marked as ${newStatus}`, 'success');
-      } else {
-        showToast('Failed to update room status', 'error');
-      }
-    }
-
-    // ==================== BOOKING FORM ==================== 
-   async function submitBooking(event) {
-  event.preventDefault();
-
-  const name = document.getElementById('guestName').value.trim();
-  const email = document.getElementById('guestEmail').value.trim();
-  const phone = document.getElementById('guestPhone').value.trim();
-  const nationalId = document.getElementById('guestNationalId').value.trim();
-  const roomType = document.getElementById('roomType').value;
-  const checkIn = document.getElementById('checkIn').value;
-  const checkOut = document.getElementById('checkOut').value;
-  const paymentMethod = document.getElementById('paymentMethod').value;
-
-  // Validation
-  if (!name || !email || !phone || !nationalId || !roomType || !checkIn || !checkOut || !paymentMethod) {
-    showToast('Please fill in all fields', 'error');
-    return;
-  }
-
-  const btn = document.getElementById('bookingSubmitBtn');
-  btn.disabled = true;
-  btn.textContent = 'Processing...';
-
-  try {
-    // 1. Create guest in YOUR Postgres DB
-    const guestRes = await fetch('/api/guests', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        full_name: name,
-        phone_number: phone,
-        email: email,
-        national_id: nationalId.toUpperCase()
-      })
-    });
-
-    if (!guestRes.ok) throw new Error('Failed to create guest');
-    const guest = await guestRes.json();
-    const guestId = guest.guest_id;
-
-    // 2. Get available room
-    const roomsRes = await fetch(`/api/rooms?type=${roomType}&status=Available`);
-    if (!roomsRes.ok) throw new Error('Failed to fetch rooms');
-    const rooms = await roomsRes.json();
-    const availRoom = rooms.find(r => r.room_type === roomType && r.room_status === 'Available');
-
-    if (!availRoom) {
-      showToast('No rooms available for this type', 'error');
-      btn.disabled = false;
-      btn.textContent = 'Confirm Reservation';
-      return;
-    }
-
-    // 3. Create reservation
-    const resRes = await fetch('/api/reservations', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        guest_id: guestId,
-        room_number: availRoom.room_number,
-        room_type: roomType,
-        check_in_date: checkIn,
-        check_out_date: checkOut,
-        payment_method: paymentMethod
-      })
-    });
-
-    if (!resRes.ok) throw new Error('Failed to create reservation');
-    const reservation = await resRes.json();
-    const reservationId = reservation.reservation_id;
-
-    // 4. Calculate amount
-    const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
-    const template = ROOM_TEMPLATES.find(t => t.type === roomType);
-    const amount = nights * template.price;
-
-    // 5. Create payment
-    const payRes = await fetch('/api/payments', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        reservation_id: reservationId,
-        guest_id: guestId,
-        payment_amount: amount,
-        payment_method: paymentMethod,
-        payment_status: 'Fully Paid'
-      })
-    });
-
-    if (!payRes.ok) throw new Error('Failed to create payment');
-
-    // 6. Update room status to Occupied
-    const updateRes = await fetch(`/api/rooms/${availRoom.room_number}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ room_status: 'Occupied' })
-    });
-
-    if (!updateRes.ok) console.warn('Room status update warning');
-
-    // 7. Show confirmation
-    document.getElementById('conf-resid').textContent = reservationId;
-    document.getElementById('conf-name').textContent = name;
-    document.getElementById('conf-room').textContent = `${roomType} (Rm ${availRoom.room_number})`;
-    document.getElementById('conf-checkin').textContent = formatDate(checkIn);
-    document.getElementById('conf-checkout').textContent = formatDate(checkOut);
-    document.getElementById('conf-amount').textContent = `$${amount.toLocaleString()}`;
-
-    document.getElementById('booking-form-container').style.display = 'none';
-    document.getElementById('booking-confirmation').style.display = 'block';
-    showToast('✓ Reservation created successfully!', 'success');
-
-  } catch (err) {
-    showToast('Error: ' + err.message, 'error');
-    console.error('Booking error:', err);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Confirm Reservation';
-  }
-}
-
-    function resetBookingForm() {
-      document.getElementById('bookingForm').reset();
-      document.getElementById('booking-form-container').style.display = 'block';
-      document.getElementById('booking-confirmation').style.display = 'none';
-    }
-
-    // ==================== LOOKUP RESERVATION ==================== 
-    function lookupReservation(event) {
-      event.preventDefault();
-      const resId = document.getElementById('lookupId').value.trim();
-      const email = document.getElementById('lookupEmail').value.trim();
-
-      const found = allReservations.find(r =>
-        r.record_type === 'reservation' &&
-        r.reservation_id === resId &&
-        r.email === email
-      );
-
-      if (!found) {
-        document.getElementById('lookup-error').textContent = 'Reservation not found. Please check your ID and email.';
-        document.getElementById('lookup-error').style.display = 'block';
-        document.getElementById('reservation-details').style.display = 'none';
-        return;
-      }
-
-      document.getElementById('lookup-error').style.display = 'none';
-      document.getElementById('res-id-display').textContent = found.reservation_id;
-      document.getElementById('res-guest-name').textContent = found.full_name;
-      document.getElementById('res-guest-email').textContent = found.email;
-      document.getElementById('res-guest-phone').textContent = found.phone_number;
-      document.getElementById('res-room').textContent = found.room_type;
-      document.getElementById('res-room-num').textContent = found.room_number || 'TBA';
-      document.getElementById('res-checkin').textContent = formatDate(found.check_in_date);
-      document.getElementById('res-checkout').textContent = formatDate(found.check_out_date);
-      document.getElementById('res-amount').textContent = `$${found.payment_amount || '0'}`;
-      document.getElementById('res-payment-id').textContent = found.payment_id || 'N/A';
-
-      const badge = document.getElementById('res-status-badge');
-      badge.textContent = found.reservation_status;
-      badge.className = 'status-badge status-' + (found.reservation_status?.toLowerCase() || 'pending');
-
-      document.getElementById('reservation-details').style.display = 'block';
-    }
-
-    // ==================== ADMIN FUNCTIONS ==================== 
-    function adminLogin(event) {
-      event.preventDefault();
-      const username = document.getElementById('adminUsername').value.trim();
-      const password = document.getElementById('adminPassword').value.trim();
-
-      if (username === 'admin' && password === 'admin123') {
-        currentUser = username;
-        document.getElementById('admin-login-container').style.display = 'none';
-        document.getElementById('admin-dashboard-container').style.display = 'block';
-        renderReservationsTable();
-        showToast('Admin login successful', 'success');
-      } else {
-        document.getElementById('admin-login-error').textContent = 'Invalid username or password';
-        document.getElementById('admin-login-error').style.display = 'block';
-      }
-    }
-
-    function adminLogout() {
-      currentUser = null;
-      document.getElementById('adminUsername').value = '';
-      document.getElementById('adminPassword').value = '';
-      document.getElementById('admin-login-container').style.display = 'flex';
-      document.getElementById('admin-dashboard-container').style.display = 'none';
-      showPage('admin');
-      showToast('Logged out', 'success');
-    }
-
-    function showAdminTab(tab) {
-      document.getElementById('admin-reservations-panel').style.display = tab === 'reservations' ? 'block' : 'none';
-      document.getElementById('admin-rooms-panel').style.display = tab === 'rooms' ? 'block' : 'none';
-
-      document.getElementById('tab-reservations').classList.toggle('active', tab === 'reservations');
-      document.getElementById('tab-rooms').classList.toggle('active', tab === 'rooms');
-    }
-
-    // ==================== CONTACT FORM ==================== 
-    function sendContactMsg(event) {
-      event.preventDefault();
-      const name = document.getElementById('cName').value.trim();
-      const email = document.getElementById('cEmail').value.trim();
-      const message = document.getElementById('cMessage').value.trim();
-
-      if (!name || !email || !message) {
-        showToast('Please fill in all fields', 'error');
-        return;
-      }
-
-      document.getElementById('contactForm').style.display = 'none';
-      document.getElementById('contact-success').style.display = 'block';
-
-      setTimeout(() => {
-        document.getElementById('cName').value = '';
-        document.getElementById('cEmail').value = '';
-        document.getElementById('cMessage').value = '';
-        document.getElementById('contactForm').style.display = 'block';
-        document.getElementById('contact-success').style.display = 'none';
-      }, 3000);
-    }
-
-    // ==================== PAGE NAVIGATION ==================== 
-    function showPage(pageName) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      const targetPage = document.getElementById('page-' + pageName);
-      if (targetPage) targetPage.classList.add('active');
-
-      if (pageName === 'admin' && !currentUser) {
-        document.getElementById('admin-login-container').style.display = 'flex';
-        document.getElementById('admin-dashboard-container').style.display = 'none';
-      } else if (pageName === 'admin' && currentUser) {
-        document.getElementById('admin-login-container').style.display = 'none';
-        document.getElementById('admin-dashboard-container').style.display = 'block';
-      }
-    }
-
-    function handleAdminClick() {
-      showPage('admin');
-      closeMobileMenu();
-    }
-
-    function toggleMobileMenu() {
-      const menu = document.getElementById('mobileMenu');
-      menu.classList.toggle('open');
-    }
-
-    function closeMobileMenu() {
-      document.getElementById('mobileMenu').classList.remove('open');
-    }
-
-    // ==================== VALIDATION ==================== 
-    function validateIdInput() {
-      const input = document.getElementById('guestNationalId');
-      input.value = input.value.toUpperCase();
-    }
-
-    function validateIdFormat() {
-      const id = document.getElementById('guestNationalId').value.toUpperCase();
-      const idError = document.getElementById('idError');
-      const pattern = /^GHA-[A-Z0-9]{9}-[0-9]$/;
-      idError.style.display = pattern.test(id) ? 'none' : 'block';
-    }
-
-    // ==================== UTILITIES ==================== 
-    function formatDate(dateStr) {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-    }
-
-    function showToast(message, type) {
-      const toast = document.getElementById('toast');
-      const toastMsg = document.getElementById('toast-msg');
-      toastMsg.textContent = message;
-      toast.style.background = type === 'success' ? '#d1fae5' : '#fee2e2';
-      toast.style.color = type === 'success' ? '#065f46' : '#991b1b';
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-
-    function openConfirmDelete(id, type) {
-      const modal = document.getElementById('confirmModal');
-      document.getElementById('confirmMsg').textContent = `Are you sure you want to delete this ${type}?`;
-      document.getElementById('confirmBtn').onclick = async () => {
-        if (window.dataSdk) {
-          const item = allReservations.find(r => r.__backendId === id);
-          if (item) {
-            const result = await window.dataSdk.delete(item);
-            if (result.isOk) {
-              showToast(`${type} deleted successfully`, 'success');
-            } else {
-              showToast('Failed to delete', 'error');
-            }
-          }
-        }
-        closeConfirm();
-      };
-      modal.classList.add('open');
-    }
-
-    function closeConfirm() {
-      document.getElementById('confirmModal').classList.remove('open');
-    }
-
-    // ==================== PRICE PREVIEW ==================== 
-    document.addEventListener('DOMContentLoaded', () => {
-      const roomType = document.getElementById('roomType');
-      const checkIn = document.getElementById('checkIn');
-      const checkOut = document.getElementById('checkOut');
-      const preview = document.getElementById('booking-price-preview');
-      const nightsLabel = document.getElementById('nights-label');
-      const totalPrice = document.getElementById('total-price');
-
-      if (roomType && checkIn && checkOut) {
-        const updatePrice = () => {
-          if (!checkIn.value || !checkOut.value || !roomType.value) {
-            preview.style.display = 'none';
-            return;
-          }
-
-          const nights = Math.ceil((new Date(checkOut.value) - new Date(checkIn.value)) / (1000 * 60 * 60 * 24));
-          if (nights <= 0) {
-            preview.style.display = 'none';
-            return;
-          }
-
-          const template = ROOM_TEMPLATES.find(t => t.type === roomType.value);
-          const total = nights * template.price;
-
-          nightsLabel.textContent = nights + (nights === 1 ? ' night' : ' nights');
-          totalPrice.textContent = '$' + total.toLocaleString();
-          preview.style.display = 'block';
-        };
-
-        roomType.addEventListener('change', updatePrice);
-        checkIn.addEventListener('change', updatePrice);
-        checkOut.addEventListener('change', updatePrice);
-      }
-
-      initializeApp();
-      lucide.createIcons();
-    });
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ddcd0abe42a9346',t:'MTc3Mzc1OTA4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>
+  
