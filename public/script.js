@@ -274,18 +274,18 @@ const images = [
 ];
 
 let currentIndex = 0;
-const heroBg = document.querySelector('.hero-bg');
+const heroSlideshow = document.getElementById('heroSlideshow');
 
-function changeBackground() {
-  if (heroBg) {
+function changeSlide() {
+  if (heroSlideshow) {
+    heroSlideshow.style.backgroundImage = `url(${images[currentIndex]})`;
     currentIndex = (currentIndex + 1) % images.length;
-    heroBg.style.backgroundImage = `url(${images[currentIndex]})`;
   }
 }
 
-// Initialize the first background image
-if (heroBg) {
-  heroBg.style.backgroundImage = `url(${images[0]})`;
+// Initialize the first slide
+if (heroSlideshow) {
+  heroSlideshow.style.backgroundImage = `url(${images[0]})`;
 }
 
-setInterval(changeBackground, 5000);
+setInterval(changeSlide, 5000);
