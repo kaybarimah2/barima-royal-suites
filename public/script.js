@@ -277,8 +277,15 @@ let currentIndex = 0;
 const heroBg = document.querySelector('.hero-bg');
 
 function changeBackground() {
-  currentIndex = (currentIndex + 1) % images.length;
-  heroBg.style.backgroundImage = `url(${images[currentIndex]})`;
+  if (heroBg) {
+    currentIndex = (currentIndex + 1) % images.length;
+    heroBg.style.backgroundImage = `url(${images[currentIndex]})`;
+  }
+}
+
+// Initialize the first background image
+if (heroBg) {
+  heroBg.style.backgroundImage = `url(${images[0]})`;
 }
 
 setInterval(changeBackground, 5000);
