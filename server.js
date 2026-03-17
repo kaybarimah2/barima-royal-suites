@@ -3,7 +3,8 @@ const path = require('path');
 const cors = require('cors');
 const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
-require('dotenv').config();
+const bcrypt = require('bcrypt'); // Add this at the top for password hashing
+require('dotenv').config({ path: './Pass.gitignore/.env' }); // Explicitly load .env from Pass.gitignore folder
 
 const app = express();
 
@@ -19,7 +20,8 @@ app.get('/', (req, res) => {
 // Database connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  password: String(process.env.DATABASE_PASSWORD || 'Presec@2022') // Ensure password is a string
 });
 
 // Test DB connection
@@ -27,6 +29,8 @@ pool.query('SELECT NOW()', (err, res) => {
   if (err) console.error('DB Connection Error:', err);
   else console.log('✓ Database connected');
 });
+
+console.log('DATABASE_URL:', process.env.DATABASE_URL); // Debug the loaded DATABASE_URL
 
 // ==================== GUESTS ====================
 app.post('/api/guests', async (req, res) => {
@@ -59,27 +63,38 @@ app.get('/api/rooms', async (req, res) => {
 app.post('/api/reservations', async (req, res) => {
   try {
     const { full_name, phone_number, email, national_id, room_type, check_in_date, check_out_date, payment_method, payment_amount } = req.body;
-    
-    // Step 1: Create or get guest
-    const guest_id = 'G-' + uuidv4().slice(0, 6).toUpperCase();
-    const guestResult = await pool.query(
-      'INSERT INTO guests (guest_id, full_name, phone_number, email, national_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [guest_id, full_name, phone_number, email, national_id]
+
+    // Step 1: Check if guest already exists
+    const existingGuest = await pool.query(
+      'SELECT * FROM guests WHERE email = $1 OR phone_number = $2 OR national_id = $3',
+      [email, phone_number, national_id]
     );
-    
+
+    let guest_id;
+    if (existingGuest.rows.length > 0) {
+      guest_id = existingGuest.rows[0].guest_id;
+    } else {
+      // Create new guest
+      guest_id = 'G-' + uuidv4().slice(0, 6).toUpperCase();
+      await pool.query(
+        'INSERT INTO guests (guest_id, full_name, phone_number, email, national_id) VALUES ($1, $2, $3, $4, $5)',
+        [guest_id, full_name, phone_number, email, national_id]
+      );
+    }
+
     // Step 2: Find an available room with the requested type
     const roomResult = await pool.query(
       'SELECT * FROM rooms WHERE room_type = $1 AND room_status = $2 LIMIT 1',
       [room_type, 'Available']
     );
-    
+
     if (roomResult.rows.length === 0) {
       return res.status(400).json({ error: 'No available rooms of this type' });
     }
-    
+
     const room = roomResult.rows[0];
     const room_number = room.room_number;
-    
+
     // Step 3: Create reservation
     const reservation_id = 'RES-' + uuidv4().slice(0, 6).toUpperCase();
     const reservation_date = new Date().toISOString().split('T')[0];
@@ -94,24 +109,24 @@ app.post('/api/reservations', async (req, res) => {
 
     // Step 4: Update room status
     await pool.query('UPDATE rooms SET room_status = $1 WHERE room_number = $2', ['Occupied', room_number]);
-    
+
     // Step 5: Create payment record
     const payment_id = 'PAY-' + uuidv4().slice(0, 6).toUpperCase();
     const payment_date = new Date().toISOString().split('T')[0];
-    
+
     await pool.query(
       `INSERT INTO payments 
        (payment_id, reservation_id, guest_id, payment_amount, payment_date, payment_method, payment_status)
        VALUES ($1, $2, $3, $4, $5, $6, 'Fully Paid')`,
       [payment_id, reservation_id, guest_id, payment_amount, payment_date, payment_method]
     );
-    
+
     // Return comprehensive response with all data from database
     const fullReservation = resResult.rows[0];
     res.json({
       ...fullReservation,
-      guest_id: guestResult.rows[0].guest_id,
-      full_name: guestResult.rows[0].full_name,
+      guest_id: guest_id,
+      full_name: full_name,
       payment_id: payment_id,
       payment_amount: payment_amount
     });
@@ -192,14 +207,20 @@ app.post('/api/staff/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const result = await pool.query(
-      'SELECT * FROM staff WHERE username = $1 AND password = $2',
-      [username, password]
+      'SELECT * FROM staff WHERE username = $1',
+      [username]
     );
 
     if (result.rows.length > 0) {
       const user = result.rows[0];
-      delete user.password; 
-      res.json({ success: true, user });
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (isPasswordValid) {
+        delete user.password; // Remove password before sending response
+        res.json({ success: true, user });
+      } else {
+        res.status(401).json({ success: false, message: 'Invalid credentials' });
+      }
     } else {
       res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
@@ -208,8 +229,26 @@ app.post('/api/staff/login', async (req, res) => {
   }
 });
 
+// ==================== STAFF CREATION (FOR PASSWORD HASHING) ====================
+app.post('/api/staff', async (req, res) => {
+  const { username, password, full_name, role } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+
+    const result = await pool.query(
+      'INSERT INTO staff (username, password, full_name, role) VALUES ($1, $2, $3, $4) RETURNING *',
+      [username, hashedPassword, full_name, role || 'Admin']
+    );
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ==================== START SERVER (ALWAYS AT THE BOTTOM) ====================
-const PORT = process.env.PORT || 3000;
+// Explicitly set the port
+const PORT = process.env.PORT || 9001;
 app.listen(PORT, () => {
-  console.log(`✓ Server running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
