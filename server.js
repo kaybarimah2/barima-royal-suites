@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
@@ -10,6 +11,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
+// Force the server to send index.html when users visit the main URL
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Database connection
 const pool = new Pool({
