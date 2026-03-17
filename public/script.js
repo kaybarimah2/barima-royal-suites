@@ -70,51 +70,52 @@ function closeMobileMenu() { document.getElementById('mobileMenu').classList.rem
 // ==================== ADMIN & LOGIN LOGIC ====================
 async function adminLogin(event) {
   event.preventDefault();
+
   const username = document.getElementById('adminUsername').value.trim();
   const password = document.getElementById('adminPassword').value.trim();
-  const errorEl = document.getElementById('admin-login-error');
+  const errorDiv = document.getElementById('admin-login-error');
+
+  // Clear previous error
+  errorDiv.style.display = 'none';
+
+  if (!username || !password) {
+    errorDiv.textContent = 'Please enter username and password';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  const btn = event.target.querySelector('button');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Logging in...';
 
   try {
-    const response = await fetch('/api/staff/login', {
+    const res = await fetch('/api/staff/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
 
-    const data = await response.json();
+    const data = await res.json();
 
     if (data.success) {
-      currentUser = data.user; 
+      currentUser = data.user;
       document.getElementById('admin-login-container').style.display = 'none';
       document.getElementById('admin-dashboard-container').style.display = 'block';
-      
-      showToast(`Welcome back, ${currentUser.full_name}`, 'success');
-      await refreshAdminDashboard();
+      renderReservationsTable();
+      renderAdminStats();           // ← also call this so stats load from DB
+      showToast('Admin login successful', 'success');
     } else {
-      errorEl.textContent = "Invalid username or password";
-      errorEl.style.display = 'block';
+      errorDiv.textContent = data.message || 'Invalid username or password';
+      errorDiv.style.display = 'block';
     }
   } catch (err) {
-    errorEl.textContent = "Database connection error.";
-    errorEl.style.display = 'block';
-  }
-}
-
-async function refreshAdminDashboard() {
-  try {
-    const res = await fetch('/api/reservations');
-    allReservations = await res.json();
-    
-    // Calculate basic stats for display
-    const stats = {
-      total_reservations: allReservations.length,
-      total_revenue: allReservations.reduce((sum, r) => sum + parseFloat(r.payment_amount || 0), 0)
-    };
-
-    renderAdminStats(stats);
-    renderReservationsTable();
-  } catch (err) {
-    console.error("Dashboard Load Error:", err);
+    console.error(err);
+    errorDiv.textContent = 'Server error. Please try again.';
+    errorDiv.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
 }
 
