@@ -90,9 +90,9 @@ input, select, textarea { font-family: 'Jost', sans-serif; }
   z-index: 0; /* keep under overlay */
   animation: fadeInSlide 0.8s ease-in-out forwards;
 }
-.slide-overlay {
+/*.slide-overlay {
   background: linear-gradient(135deg, rgba(26,26,46,0.2) 0%, rgba(15,52,96,0.2) 100%);
-}
+}*/
 .hero-content { position: relative; z-index: 2; text-align: center; padding: 2rem; max-width: 900px; }
 
 @media (max-width: 768px) {
