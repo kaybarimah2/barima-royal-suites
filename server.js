@@ -11,7 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
-// Force the server to send index.html when users visit the main URL
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -45,15 +45,6 @@ app.post('/api/guests', async (req, res) => {
   }
 });
 
-app.get('/api/guests/:id', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM guests WHERE guest_id = $1', [req.params.id]);
-    res.json(result.rows[0] || {});
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
 // ==================== ROOMS ====================
 app.get('/api/rooms', async (req, res) => {
   try {
@@ -64,40 +55,10 @@ app.get('/api/rooms', async (req, res) => {
   }
 });
 
-app.get('/api/rooms/:number', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM rooms WHERE room_number = $1', [req.params.number]);
-    res.json(result.rows[0] || {});
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-app.put('/api/rooms/:number', async (req, res) => {
-  try {
-    const { room_status } = req.body;
-    const result = await pool.query(
-      'UPDATE rooms SET room_status = $1 WHERE room_number = $2 RETURNING *',
-      [room_status, req.params.number]
-    );
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
 // ==================== RESERVATIONS ====================
 app.post('/api/reservations', async (req, res) => {
   try {
-    const {
-      guest_id,
-      room_number,
-      room_type,
-      check_in_date,
-      check_out_date,
-      payment_method
-    } = req.body;
-
+    const { guest_id, room_number, room_type, check_in_date, check_out_date } = req.body;
     const reservation_id = 'RES-' + uuidv4().slice(0, 6).toUpperCase();
     const reservation_date = new Date().toISOString().split('T')[0];
 
@@ -109,12 +70,9 @@ app.post('/api/reservations', async (req, res) => {
       [reservation_id, guest_id, room_number, room_type, check_in_date, check_out_date, reservation_date]
     );
 
-    // Update room status to Occupied
     await pool.query('UPDATE rooms SET room_status = $1 WHERE room_number = $2', ['Occupied', room_number]);
-
     res.json(result.rows[0]);
   } catch (err) {
-    console.error('Error creating reservation:', err);
     res.status(400).json({ error: err.message });
   }
 });
@@ -123,64 +81,6 @@ app.get('/api/reservations', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM reservations ORDER BY reservation_date DESC');
     res.json(result.rows);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-app.get('/api/reservations/lookup/:id', async (req, res) => {
-  try {
-    const result = await pool.query(
-      `SELECT r.*, g.full_name, g.email, g.phone_number, p.payment_amount, p.payment_id
-       FROM reservations r
-       JOIN guests g ON r.guest_id = g.guest_id
-       LEFT JOIN payments p ON r.reservation_id = p.reservation_id
-       WHERE r.reservation_id = $1`,
-      [req.params.id]
-    );
-    res.json(result.rows[0] || {});
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-app.put('/api/reservations/:id', async (req, res) => {
-  try {
-    const { reservation_status, room_number } = req.body;
-    
-    // If cancelling, mark room as available
-    if (reservation_status === 'Cancelled' && room_number) {
-      await pool.query('UPDATE rooms SET room_status = $1 WHERE room_number = $2', ['Available', room_number]);
-    }
-
-    const result = await pool.query(
-      'UPDATE reservations SET reservation_status = $1 WHERE reservation_id = $2 RETURNING *',
-      [reservation_status, req.params.id]
-    );
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-app.delete('/api/reservations/:id', async (req, res) => {
-  try {
-    // Get reservation to find room number
-    const resResult = await pool.query('SELECT room_number FROM reservations WHERE reservation_id = $1', [req.params.id]);
-    const reservation = resResult.rows[0];
-
-    if (reservation) {
-      // Mark room as available
-      await pool.query('UPDATE rooms SET room_status = $1 WHERE room_number = $2', ['Available', reservation.room_number]);
-    }
-
-    // Delete reservation
-    await pool.query('DELETE FROM reservations WHERE reservation_id = $1', [req.params.id]);
-    
-    // Delete associated payments
-    await pool.query('DELETE FROM payments WHERE reservation_id = $1', [req.params.id]);
-
-    res.json({ success: true });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -206,15 +106,6 @@ app.post('/api/payments', async (req, res) => {
   }
 });
 
-app.get('/api/payments', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM payments ORDER BY payment_date DESC');
-    res.json(result.rows);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
 // ==================== STATS ====================
 app.get('/api/stats', async (req, res) => {
   try {
@@ -232,14 +123,6 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
-// ==================== START SERVER ====================
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✓ Server running on port ${PORT}`);
-});
-
-// You need to save this very well
-
 // ==================== STAFF LOGIN ====================
 app.post('/api/staff/login', async (req, res) => {
   const { username, password } = req.body;
@@ -250,7 +133,6 @@ app.post('/api/staff/login', async (req, res) => {
     );
 
     if (result.rows.length > 0) {
-      // Don't send the password back to the frontend!
       const user = result.rows[0];
       delete user.password; 
       res.json({ success: true, user });
@@ -260,4 +142,10 @@ app.post('/api/staff/login', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// ==================== START SERVER (ALWAYS AT THE BOTTOM) ====================
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`✓ Server running on port ${PORT}`);
 });
