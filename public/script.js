@@ -67,6 +67,24 @@ function showPage(pageName) {
 function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
 function closeMobileMenu() { document.getElementById('mobileMenu').classList.remove('open'); }
 
+// ==================== ADMIN DASHBOARD ====================
+async function refreshAdminDashboard() {
+  try {
+    // Fetch stats
+    const statsRes = await fetch('/api/stats');
+    const stats = await statsRes.json();
+    renderAdminStats(stats);
+    
+    // Fetch reservations with guest and payment data
+    const resRes = await fetch('/api/reservations');
+    allReservations = await resRes.json();
+    renderReservationsTable();
+  } catch (err) {
+    console.error('Error refreshing admin dashboard:', err);
+    showToast('Error loading dashboard data', 'error');
+  }
+}
+
 // ==================== ADMIN & LOGIN LOGIC ====================
 async function adminLogin(event) {
   event.preventDefault();
@@ -102,8 +120,7 @@ async function adminLogin(event) {
       currentUser = data.user;
       document.getElementById('admin-login-container').style.display = 'none';
       document.getElementById('admin-dashboard-container').style.display = 'block';
-      renderReservationsTable();
-      renderAdminStats();           // ← also call this so stats load from DB
+      refreshAdminDashboard();           // ← fetch all data from DB
       showToast('Admin login successful', 'success');
     } else {
       errorDiv.textContent = data.message || 'Invalid username or password';
@@ -119,16 +136,20 @@ async function adminLogin(event) {
   }
 }
 
-function renderAdminStats(stats) {
+function renderAdminStats(stats = {}) {
   const container = document.getElementById('admin-stats');
   if (!container) return;
+  
+  const totalRes = stats.total_reservations || 0;
+  const totalRev = stats.total_revenue || 0;
+  
   container.innerHTML = `
     <div class="card" style="padding:1.5rem;text-align:center;">
-      <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;">${stats.total_reservations}</p>
+      <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;">${totalRes}</p>
       <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;">Total Reservations</p>
     </div>
     <div class="card" style="padding:1.5rem;text-align:center;">
-      <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;">$${stats.total_revenue.toLocaleString()}</p>
+      <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;">$${parseFloat(totalRev).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
       <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;">Total Revenue</p>
     </div>
   `;
@@ -140,10 +161,10 @@ function renderReservationsTable() {
   tbody.innerHTML = allReservations.map(res => `
     <tr style="border-bottom:1px solid #f1f0ed;">
       <td style="padding:1rem; font-size:0.85rem;">${res.reservation_id}</td>
-      <td style="padding:1rem; font-size:0.85rem;">${res.full_name}</td>
-      <td style="padding:1rem; font-size:0.85rem;">${res.room_type} (Rm ${res.room_number})</td>
-      <td style="padding:1rem; font-size:0.85rem;">$${res.payment_amount}</td>
-      <td style="padding:1rem;"><span class="status-badge status-confirmed">${res.reservation_status}</span></td>
+      <td style="padding:1rem; font-size:0.85rem;">${res.full_name || 'N/A'}</td>
+      <td style="padding:1rem; font-size:0.85rem;">${res.room_type || 'N/A'} (Rm ${res.room_number || 'N/A'})</td>
+      <td style="padding:1rem; font-size:0.85rem;">$${res.payment_amount ? parseFloat(res.payment_amount).toFixed(2) : '0.00'}</td>
+      <td style="padding:1rem;"><span class="status-badge status-confirmed">${res.reservation_status || 'N/A'}</span></td>
     </tr>
   `).join('');
 }
@@ -161,15 +182,29 @@ async function submitBooking(event) {
   btn.disabled = true;
   btn.textContent = 'Processing...';
 
+  const roomType = document.getElementById('roomType').value;
+  const checkIn = new Date(document.getElementById('checkIn').value);
+  const checkOut = new Date(document.getElementById('checkOut').value);
+  const guestName = document.getElementById('guestName').value;
+  
+  // Calculate number of nights
+  const nights = (checkOut - checkIn) / (1000 * 60 * 60 * 24);
+  
+  // Get room price from ROOM_TEMPLATES
+  const roomTemplate = ROOM_TEMPLATES.find(t => t.type === roomType);
+  const pricePerNight = roomTemplate ? roomTemplate.price : 0;
+  const totalAmount = nights * pricePerNight;
+
   const bookingData = {
-    full_name: document.getElementById('guestName').value,
+    full_name: guestName,
     email: document.getElementById('guestEmail').value,
     phone_number: document.getElementById('guestPhone').value,
     national_id: document.getElementById('guestNationalId').value.toUpperCase(),
-    room_type: document.getElementById('roomType').value,
+    room_type: roomType,
     check_in_date: document.getElementById('checkIn').value,
     check_out_date: document.getElementById('checkOut').value,
-    payment_method: document.getElementById('paymentMethod').value
+    payment_method: document.getElementById('paymentMethod').value,
+    payment_amount: totalAmount
   };
 
   try {
@@ -179,10 +214,21 @@ async function submitBooking(event) {
       body: JSON.stringify(bookingData)
     });
 
-    if (!res.ok) throw new Error("Booking failed");
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || "Booking failed");
+    }
     
     const result = await res.json();
+    
+    // Populate confirmation details
     document.getElementById('conf-resid').textContent = result.reservation_id;
+    document.getElementById('conf-name').textContent = guestName;
+    document.getElementById('conf-room').textContent = `${roomType} - Room ${result.room_number || 'TBA'}`;
+    document.getElementById('conf-checkin').textContent = new Date(bookingData.check_in_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    document.getElementById('conf-checkout').textContent = new Date(bookingData.check_out_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    document.getElementById('conf-amount').textContent = '$' + totalAmount.toFixed(2);
+    
     document.getElementById('booking-form-container').style.display = 'none';
     document.getElementById('booking-confirmation').style.display = 'block';
     showToast("Reservation successful!", "success");
