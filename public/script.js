@@ -126,9 +126,10 @@ function closeMobileMenu() {
 
 // ==================== HERO SLIDESHOW ====================
 const heroBackgrounds = [
-  'linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8)), url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 600%22%3E%3Crect fill=%22%231a1a2e%22 width=%221200%22 height=%22600%22/%3E%3Cpath d=%22M0 300 Q300 200 600 300 T1200 300%22 stroke=%22rgba(201,168,76,0.1)%22 stroke-width=%222%22 fill=%22none%22/%3E%3C/svg%3E")',
-  'linear-gradient(135deg, rgba(79, 172, 254, 0.8), rgba(0, 242, 254, 0.8)), url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 600%22%3E%3Crect fill=%221a1a2e%22 width=%221200%22 height=%22600%22/%3E%3Ccircle cx=%22200%22 cy=%22150%22 r=%2250%22 fill=%22rgba(201,168,76,0.1)%22/%3E%3Ccircle cx=%221000%22 cy=%22450%22 r=%2280%22 fill=%22rgba(201,168,76,0.1)%22/%3E%3C/svg%3E")',
-  'linear-gradient(135deg, rgba(168, 85, 247, 0.8), rgba(219, 39, 119, 0.8)), url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 600%22%3E%3Crect fill=%221a1a2e%22 width=%221200%22 height=%22600%22/%3E%3Crect x=%22100%22 y=%22100%22 width=%22200%22 height=%22200%22 fill=%22rgba(201,168,76,0.1)%22/%3E%3C/svg%3E")',
+  'linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg") center/cover no-repeat',
+  'linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(" https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg") center/cover no-repeat',
+  'linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("https://images.pexels.com/photos/164558/pexels-photo-164558.jpeg") center/cover no-repeat',
+  'linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg") center/cover no-repeat',
 ];
 
 let currentSlide = 0;
