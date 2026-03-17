@@ -1238,22 +1238,23 @@
     }
 
     // ==================== ADMIN FUNCTIONS ==================== 
-    function adminLogin(event) {
-      event.preventDefault();
-      const username = document.getElementById('adminUsername').value.trim();
-      const password = document.getElementById('adminPassword').value.trim();
+   // ==================== ADMIN FUNCTIONS ==================== 
+function adminLogin(event) {
+  event.preventDefault();
+  const username = document.getElementById('adminUsername').value.trim();
+  const password = document.getElementById('adminPassword').value.trim();
 
-      if (username === 'admin' && password === 'admin123') {
-        currentUser = username;
-        document.getElementById('admin-login-container').style.display = 'none';
-        document.getElementById('admin-dashboard-container').style.display = 'block';
-        renderReservationsTable();
-        showToast('Admin login successful', 'success');
-      } else {
-        document.getElementById('admin-login-error').textContent = 'Invalid username or password';
-        document.getElementById('admin-login-error').style.display = 'block';
-      }
-    }
+  // THIS IS THE PART TO REPLACE
+  if (username === 'admin' && password === 'admin123') { 
+    currentUser = username;
+    document.getElementById('admin-login-container').style.display = 'none';
+    document.getElementById('admin-dashboard-container').style.display = 'block';
+    renderReservationsTable();
+    showToast('Admin login successful', 'success');
+  } else {
+    // ... error handling ...
+  }
+}
 
     function adminLogout() {
       currentUser = null;
