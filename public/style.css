@@ -1,173 +1,63 @@
-:root {
-  --gold: #C9A84C;
-  --gold-light: #E8C97A;
-  --dark: #1A1A2E;
-  --surface: #F9F6F0;
-  --text: #2C2C3A;
-  --muted: #7A7A8C;
+/* General Styles */
+body {
+  box-sizing: border-box;
 }
 
-* { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; padding: 0; }
-body { font-family: 'Jost', sans-serif; background: var(--surface); color: var(--text); }
-
-.font-display { font-family: 'Cormorant Garamond', serif; }
-.gold { color: var(--gold); }
-.bg-gold { background: var(--gold); }
-.border-gold { border-color: var(--gold); }
-
-.page { display: none; }
-.page.active { display: block; }
-
-.nav-link { cursor: pointer; transition: color 0.2s; font-weight: 500; letter-spacing: 0.05em; font-size: 0.8rem; text-transform: uppercase; }
-.nav-link:hover, .nav-link.active { color: var(--gold); }
-
-.btn-gold { background: var(--gold); color: white; border: none; cursor: pointer; font-family: 'Jost', sans-serif; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.75rem; transition: background 0.2s, transform 0.1s; }
-.btn-gold:hover { background: var(--gold-light); }
-
-.btn-outline { border: 1px solid var(--gold); color: var(--gold); background: transparent; cursor: pointer; font-family: 'Jost', sans-serif; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.75rem; transition: all 0.2s; }
-.btn-outline:hover { background: var(--gold); color: white; }
-
-.card { background: white; border-radius: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-.hero-bg { position: relative; min-height: 600px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-
-input, select, textarea { font-family: 'Jost', sans-serif; }
-
-.toast { position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.3s; pointer-events: none; }
-.toast.show { transform: translateY(0); opacity: 1; }
-
-.status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
-.status-confirmed { background: #d1fae5; color: #065f46; }
-.status-checkedout { background: #e0e7ff; color: #3730a3; }
-.status-cancelled { background: #fee2e2; color: #991b1b; }
-.room-available { background: #d1fae5; color: #065f46; }
-.room-occupied { background: #fee2e2; color: #991b1b; }
-
-.app-wrap { min-height: 100%; display: flex; flex-direction: column; }
-.main-content { flex: 1; }
-.section-divider { width: 60px; height: 2px; background: var(--gold); margin: 0 auto 1.5rem; }
-
-.mobile-menu { display: none; }
-@media (max-width: 768px) {
-  .desktop-nav { display: none; }
-  .mobile-menu-btn { display: block; }
-  .mobile-menu.open { display: block; }
-}
-@media (min-width: 769px) {
-  .mobile-menu-btn { display: none; }
-}
-
-.confirm-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
-.confirm-modal.open { display: flex; }
-
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes fadeInSlide { from { opacity: 0; } to { opacity: 1; } }
-
-.room-card-home { position: relative; border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-.room-card-home:hover { transform: translateY(-8px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
-.room-card-home-img { width: 100%; aspect-ratio: 3/4; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; position: relative; overflow: hidden; }
-.room-card-home-img.booked { opacity: 0.5; background: linear-gradient(135deg, #999 0%, #666 100%); }
-.room-card-home-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 1.5rem; }
-.room-card-home-content { position: absolute; bottom: 0; left: 0; right: 0; background: white; padding: 1rem; }
-.room-card-home-type { font-size: 0.9rem; font-weight: 600; color: var(--text); margin: 0; }
-.room-card-home-price { font-size: 1.1rem; font-weight: 600; color: var(--gold); margin: 0.25rem 0 0; font-family: 'Cormorant Garamond', serif; }
-.room-card-home-status { position: absolute; top: 1rem; right: 1rem; z-index: 10; }
-
-.hero-slideshow { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* Hero Slideshow */
 .hero-bg {
   position: relative;
-  width: 100%;
-  height: 600px; /* adjust height */
+  height: 100vh;
   overflow: hidden;
 }
 
 .hero-slideshow {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-}
-
-.slide-bg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
-
-.slide-bg.active {
-  opacity: 1;
+  animation: fadeSlide 5s infinite;
 }
 
 .slide-overlay {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(26,26,46,0.2) 0%, rgba(15,52,96,0.2) 100%);
-  z-index: 1; /* above slides */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .hero-content {
-  position: relative;
-  z-index: 2;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
-  padding: 2rem;
-  max-width: 900px;
   color: white;
 }
-/* Mobile adjustments */
-@media (max-width: 768px) {
-  .hero-bg { min-height: 400px; }
-  .hero-content p { font-size: max(0.7rem, 2vw) !important; }
-  html, body { font-size: 16px; }
-  nav { padding: 0 1rem !important; }
-  nav > div { height: auto !important; padding: 1rem 0 !important; }
-  .nav-link { font-size: 0.75rem !important; }
-  .hero-bg { min-height: 350px !important; }
-  .hero-content { padding: 1.5rem !important; }
-  .hero-content h1 { font-size: 2rem !important; }
-  #home-tagline { font-size: 1rem !important; }
-  #admin-stats { grid-template-columns: 1fr !important; }
-  #reservations-table { font-size: 0.7rem !important; }
-  #reservations-table td { padding: 0.5rem !important; }
-  .admin-tab { padding: 0.5rem 0.75rem !important; font-size: 0.7rem !important; }
-  #admin-rooms-grid { grid-template-columns: 1fr !important; }
-}
-  .hero-content p { font-size: max(0.7rem, 2vw) !important; }
-  html, body { font-size: 16px; }
-  nav { padding: 0 1rem !important; }
-  nav > div { height: auto !important; padding: 1rem 0 !important; }
-  .nav-link { font-size: 0.75rem !important; }
-  .hero-bg { min-height: 350px !important; }
-  .hero-content { padding: 1.5rem !important; }
-  .hero-content h1 { font-size: 2rem !important; }
-  #home-tagline { font-size: 1rem !important; }
-  #admin-stats { grid-template-columns: 1fr !important; }
-  #reservations-table { font-size: 0.7rem !important; }
-  #reservations-table td { padding: 0.5rem !important; }
-  .admin-tab { padding: 0.5rem 0.75rem !important; font-size: 0.7rem !important; }
-  #admin-rooms-grid { grid-template-columns: 1fr !important; }
+
+/* Animations */
+@keyframes fadeSlide {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-@media (max-width: 480px) {
-  .hero-bg { min-height: 280px !important; }
-  .hero-content h1 { font-size: 1.5rem !important; }
-  #home-tagline { font-size: 0.9rem !important; }
-  .section-divider { margin-bottom: 1rem !important; }
-  .btn-gold, .btn-outline { padding: 0.75rem 1.5rem !important; font-size: 0.8rem !important; }
-  .page { padding: 2rem 1rem !important; }
-  .card { padding: 1.5rem !important; }
-  h2 { font-size: 1.3rem !important; }
-  h3 { font-size: 1.1rem !important; }
-  input, select, textarea { padding: 0.65rem 0.8rem !important; font-size: 16px !important; }
-  label { font-size: 0.7rem !important; }
-  #reservations-table { font-size: 0.65rem !important; }
-  #reservations-table td { padding: 0.4rem !important; white-space: normal !important; }
-  .desktop-nav { display: none !important; }
-  .status-badge { padding: 3px 8px !important; font-size: 0.65rem !important; }
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
