@@ -1,3 +1,37 @@
+// ==================== PASSWORD VISIBILITY TOGGLE ====================
+function togglePasswordVisibility() {
+  const passwordInput = document.getElementById('adminPassword');
+  const toggleIcon = document.getElementById('togglePasswordIcon');
+  
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    toggleIcon.setAttribute('data-lucide', 'eye-off');
+  } else {
+    passwordInput.type = 'password';
+    toggleIcon.setAttribute('data-lucide', 'eye');
+  }
+  
+  // Refresh lucide icons
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+}
+
+// ==================== LOADING INDICATOR ====================
+function showLoadingIndicator() {
+  const indicator = document.getElementById('admin-loading-indicator');
+  if (indicator) {
+    indicator.style.display = 'block';
+  }
+}
+
+function hideLoadingIndicator() {
+  const indicator = document.getElementById('admin-loading-indicator');
+  if (indicator) {
+    indicator.style.display = 'none';
+  }
+}
+
 // ==================== CONFIG & DATA ====================
 const ROOM_TEMPLATES = [
   { type: 'Single', price: 129, emoji: '🛏️', capacity: 1, image: 'https://images.pexels.com/photos/15230252/pexels-photo-15230252.jpeg?auto=compress&cs=tinysrgb&w=1920' },
@@ -153,6 +187,8 @@ function renderFeaturedRooms() {
 
 async function loadAllData() {
   try {
+    showLoadingIndicator();
+    
     // Fetch rooms from backend
     const roomsResponse = await fetch(`${API_BASE_URL}/rooms`);
     if (!roomsResponse.ok) throw new Error('Failed to load rooms');
@@ -166,6 +202,9 @@ async function loadAllData() {
     renderAllData(rooms);
   } catch (err) {
     console.error('Error loading data:', err);
+    showToast('Error loading data', 'error');
+  } finally {
+    hideLoadingIndicator();
   }
 }
 
@@ -459,21 +498,36 @@ async function adminLogin(event) {
   event.preventDefault();
   const username = document.getElementById('adminUsername').value.trim();
   const password = document.getElementById('adminPassword').value.trim();
+  const loginBtn = event.target.querySelector('button[type="submit"]');
+  const originalText = loginBtn.textContent;
 
   if (username === 'admin' && password === 'admin123') {
-    currentUser = username;
-    document.getElementById('admin-login-container').style.display = 'none';
-    document.getElementById('admin-dashboard-container').style.display = 'block';
-    
-    // Load fresh data from backend
-    await loadAllData();
-    await loadAdminStats();
-    renderReservationsTable();
-    
-    showToast('Admin login successful', 'success');
+    try {
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Loading...';
+      showLoadingIndicator();
+      
+      currentUser = username;
+      document.getElementById('admin-login-container').style.display = 'none';
+      document.getElementById('admin-dashboard-container').style.display = 'block';
+      
+      // Load fresh data from backend
+      await loadAllData();
+      await loadAdminStats();
+      renderReservationsTable();
+      
+      showToast('✓ Admin login successful', 'success');
+    } catch (err) {
+      showToast('Error loading dashboard data', 'error');
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = originalText;
+      hideLoadingIndicator();
+    }
   } else {
     document.getElementById('admin-login-error').textContent = 'Invalid username or password';
     document.getElementById('admin-login-error').style.display = 'block';
+    showToast('Login failed', 'error');
   }
 }
 
@@ -493,6 +547,7 @@ async function showAdminTab(tab) {
   const tab2 = document.getElementById('tab-rooms');
   tab1.disabled = true;
   tab2.disabled = true;
+  showLoadingIndicator();
 
   try {
     // Refresh data from backend when switching tabs
@@ -519,6 +574,7 @@ async function showAdminTab(tab) {
   } finally {
     tab1.disabled = false;
     tab2.disabled = false;
+    hideLoadingIndicator();
   }
 }
 

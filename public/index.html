@@ -388,7 +388,13 @@
          <label for="adminUsername" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Username</label> <input type="text" id="adminUsername" required placeholder="Enter username" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
         </div>
         <div style="margin-bottom:1.75rem;">
-         <label for="adminPassword" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Password</label> <input type="password" id="adminPassword" required placeholder="Enter password" style="width:100%;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
+         <label for="adminPassword" style="display:block;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Password</label>
+         <div style="display:flex;align-items:center;gap:0.5rem;">
+          <input type="password" id="adminPassword" required placeholder="Enter password" style="flex:1;border:1px solid #e2e8f0;border-radius:2px;padding:0.7rem 1rem;font-size:0.9rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#e2e8f0'">
+          <button type="button" onclick="togglePasswordVisibility()" style="background:none;border:none;cursor:pointer;color:var(--gold);padding:0.5rem;font-size:1rem;" title="Show/Hide password">
+           <i data-lucide="eye" id="togglePasswordIcon" style="width:20px;height:20px;"></i>
+          </button>
+         </div>
         </div>
         <div id="admin-login-error" style="display:none;background:#fee2e2;border:1px solid #fca5a5;border-radius:2px;padding:0.75rem 1rem;margin-bottom:1rem;color:#991b1b;font-size:0.84rem;text-align:center;"></div><button type="submit" class="btn-gold" style="width:100%;padding:0.9rem;border-radius:2px;">Log In</button>
        </form>
@@ -406,7 +412,18 @@
         <!-- Stats -->
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.25rem;margin-bottom:2rem;" id="admin-stats">
          <!-- rendered by JS -->
-        </div><!-- Tabs -->
+        </div>
+        <!-- Loading Indicator -->
+        <div id="admin-loading-indicator" style="display:none;background:#d1fae5;border:1px solid #6ee7b7;border-radius:4px;padding:1rem;margin-bottom:2rem;text-align:center;color:#047857;">
+         <div style="display:flex;align-items:center;justify-content:center;gap:0.75rem;">
+          <div style="width:16px;height:16px;border:2px solid #047857;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;"></div>
+          <span style="font-size:0.85rem;font-weight:500;">Loading latest data...</span>
+         </div>
+        </div>
+        <style>
+         @keyframes spin { to { transform: rotate(360deg); } }
+        </style>
+        <!-- Tabs -->
         <div style="display:flex;gap:0;border-bottom:2px solid #e2e8f0;margin-bottom:2rem;">
          <button class="admin-tab active" id="tab-reservations" onclick="showAdminTab('reservations')" style="padding:0.75rem 1.5rem;border:none;background:none;cursor:pointer;font-family:'Jost',sans-serif;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold);border-bottom:2px solid var(--gold);margin-bottom:-2px;">All Reservations</button> <button class="admin-tab" id="tab-rooms" onclick="showAdminTab('rooms')" style="padding:0.75rem 1.5rem;border:none;background:none;cursor:pointer;font-family:'Jost',sans-serif;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;">Room Management</button>
         </div><!-- Reservations tab -->
