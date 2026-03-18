@@ -1,9 +1,9 @@
 // ==================== CONFIG & DATA ====================
 const ROOM_TEMPLATES = [
-  { type: 'Single', price: 129, emoji: '🛏️', capacity: 1, image: 'https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg' },
-  { type: 'Double', price: 199, emoji: '🛏️🛏️', capacity: 2, image: 'https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg' },
-  { type: 'Deluxe', price: 299, emoji: '👑', capacity: 2, image: 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg' },
-  { type: 'Suite', price: 499, emoji: '🏰', capacity: 4, image: 'https://images.pexels.com/photos/164558/pexels-photo-164558.jpeg' }
+  { type: 'Single', price: 129, emoji: '🛏️', capacity: 1, image: 'https://images.pexels.com/photos/15230252/pexels-photo-15230252.jpeg?auto=compress&cs=tinysrgb&w=1920' },
+  { type: 'Double', price: 199, emoji: '🛏️🛏️', capacity: 2, image: 'https://images.pexels.com/photos/5883728/pexels-photo-5883728.jpeg?auto=compress&cs=tinysrgb&w=1920' },
+  { type: 'Deluxe', price: 299, emoji: '👑', capacity: 2, image: 'https://images.pexels.com/photos/13008559/pexels-photo-13008559.jpeg?auto=compress&cs=tinysrgb&w=1920' },
+  { type: 'Suite', price: 499, emoji: '🏰', capacity: 4, image: 'https://images.pexels.com/photos/18285946/pexels-photo-18285946.jpeg?auto=compress&cs=tinysrgb&w=1920' }
 ];
 
 const heroBackgrounds = [
