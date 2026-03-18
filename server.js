@@ -215,6 +215,38 @@ app.get('/api/payments', async (req, res) => {
   }
 });
 
+// ==================== CONTACT ====================
+app.post('/api/contact', async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO contact_messages (name, email, message, status) 
+       VALUES ($1, $2, $3, 'New') 
+       RETURNING *`,
+      [name, email, message]
+    );
+
+    res.status(201).json({ success: true, message: 'Thank you! We will get back to you within 24 hours.' });
+  } catch (err) {
+    console.error('Error submitting contact form:', err);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/api/contact', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM contact_messages ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // ==================== STATS ====================
 app.get('/api/stats', async (req, res) => {
   try {
@@ -230,6 +262,11 @@ app.get('/api/stats', async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+});
+
+// ==================== HEALTH CHECK ====================
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'Backend is running ✅', timestamp: new Date() });
 });
 
 // ==================== START SERVER ====================

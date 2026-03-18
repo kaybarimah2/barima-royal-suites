@@ -18,10 +18,13 @@ let allReservations = [];
 let currentUser = null;
 let reservationSearchTerm = '';
 
+// ==================== API CONFIG ====================
+const API_BASE_URL = 'http://localhost:3000/api';
+
 // ==================== INITIALIZATION ====================
 async function initializeApp() {
   try {
-    // Initialize Element SDK
+    // Initialize Element SDK (if available)
     if (window.elementSdk) {
       const config = {
         hotel_name: 'Barima Royal Suites',
@@ -58,30 +61,19 @@ async function initializeApp() {
       });
     }
 
-    // Initialize Data SDK
-    if (window.dataSdk) {
-      const handler = {
-        onDataChanged: (data) => {
-          allReservations = data.filter(r => r.record_type === 'reservation');
-          const rooms = data.filter(r => r.record_type === 'room');
-          renderAllData(rooms);
-        }
-      };
-
-      const result = await window.dataSdk.init(handler);
-      if (!result.isOk) {
-        console.error('Data SDK init failed');
-      }
-    }
-
     // Initialize hero slideshow
     initHeroSlideshow();
     renderRoomsGrid();
     renderFeaturedRooms();
-    renderAdminStats();
+    
+    // Load data from backend API
+    await loadAllData();
+    await loadAdminStats();
+    
     lucide.createIcons();
   } catch (err) {
     console.error('Init error:', err);
+    showToast('Error loading data from server', 'error');
   }
 }
 
@@ -157,9 +149,27 @@ function renderFeaturedRooms() {
   }
 }
 
+async function loadAllData() {
+  try {
+    // Fetch rooms from backend
+    const roomsResponse = await fetch(`${API_BASE_URL}/rooms`);
+    if (!roomsResponse.ok) throw new Error('Failed to load rooms');
+    const rooms = await roomsResponse.json();
+
+    // Fetch reservations from backend
+    const resResponse = await fetch(`${API_BASE_URL}/reservations`);
+    if (!resResponse.ok) throw new Error('Failed to load reservations');
+    allReservations = await resResponse.json();
+
+    renderAllData(rooms);
+  } catch (err) {
+    console.error('Error loading data:', err);
+  }
+}
+
 function renderAllData(rooms) {
   // Update home rooms counter
-  const available = rooms.filter(r => r.room_status === 'Available').length;
+  const available = rooms.filter(r => r.status === 'Available').length;
   document.getElementById('available-rooms-counter').innerHTML = `Available Rooms: <span style="font-size:1.1rem;">${available}</span> / 25`;
 
   // Render featured rooms
@@ -175,11 +185,11 @@ function renderAllData(rooms) {
             <p style="font-weight:600;margin:0 0 0.25rem;font-size:0.9rem;">Room ${room.room_number}</p>
             <p style="color:var(--muted);font-size:0.8rem;margin:0;">${room.room_type}</p>
           </div>
-          <span class="status-badge ${room.room_status === 'Available' ? 'room-available' : 'room-occupied'}">${room.room_status}</span>
+          <span class="status-badge ${room.status === 'Available' ? 'room-available' : 'room-occupied'}">${room.status}</span>
         </div>
-        <p style="color:var(--muted);font-size:0.75rem;margin:0.5rem 0;"><strong>Rate:</strong> $${room.price_per_night}/night</p>
-        <button class="btn-outline" style="width:100%;padding:0.6rem;border-radius:2px;margin-top:1rem;font-size:0.8rem;border:1px solid #e2e8f0;" onclick="updateRoomStatus('${room.room_number}', '${room.room_status === 'Available' ? 'Occupied' : 'Available'}')">
-          Mark as ${room.room_status === 'Available' ? 'Occupied' : 'Available'}
+        <p style="color:var(--muted);font-size:0.75rem;margin:0.5rem 0;"><strong>Rate:</strong> $${room.price}/night</p>
+        <button class="btn-outline" style="width:100%;padding:0.6rem;border-radius:2px;margin-top:1rem;font-size:0.8rem;border:1px solid #e2e8f0;" onclick="updateRoomStatus('${room.room_number}', '${room.status === 'Available' ? 'Occupied' : 'Available'}')">
+          Mark as ${room.status === 'Available' ? 'Occupied' : 'Available'}
         </button>
       </div>
     `).join('');
@@ -231,37 +241,57 @@ function filterReservations() {
 }
 
 // ==================== ADMIN FUNCTIONS ====================
-function renderAdminStats() {
+async function loadAdminStats() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/stats`);
+    if (!response.ok) throw new Error('Failed to load stats');
+    const stats = await response.json();
+    renderAdminStats(stats);
+  } catch (err) {
+    console.error('Error loading stats:', err);
+    renderAdminStats({ totalReservations: 0, availableRooms: 0, totalRevenue: 0 });
+  }
+}
+
+function renderAdminStats(data = {}) {
   const stats = document.getElementById('admin-stats');
   if (stats) {
+    const totalRes = data.totalReservations || 0;
+    const availRooms = data.availableRooms || 0;
+    const revenue = data.totalRevenue || 0;
+    
     stats.innerHTML = `
       <div class="card" style="padding:1.5rem;text-align:center;border-radius:4px;">
-        <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;font-weight:600;">0</p>
+        <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;font-weight:600;">${totalRes}</p>
         <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;margin:0.5rem 0 0;">Total Reservations</p>
       </div>
       <div class="card" style="padding:1.5rem;text-align:center;border-radius:4px;">
-        <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;font-weight:600;">0</p>
+        <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;font-weight:600;">${availRooms}</p>
         <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;margin:0.5rem 0 0;">Available Rooms</p>
       </div>
       <div class="card" style="padding:1.5rem;text-align:center;border-radius:4px;">
-        <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;font-weight:600;">$0</p>
+        <p class="font-display" style="color:var(--gold);font-size:2rem;margin:0;font-weight:600;">$${revenue.toLocaleString()}</p>
         <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;margin:0.5rem 0 0;">Total Revenue</p>
       </div>
     `;
   }
 }
 
+// ==================== ROOM MANAGEMENT ====================
 async function updateRoomStatus(roomNumber, newStatus) {
-  if (!window.dataSdk) return;
-  const room = allReservations.find(r => r.room_number === roomNumber && r.record_type === 'room');
-  if (!room) return;
+  try {
+    const response = await fetch(`${API_BASE_URL}/rooms/${roomNumber}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
 
-  const updated = { ...room, room_status: newStatus };
-  const result = await window.dataSdk.update(updated);
-  if (result.isOk) {
+    if (!response.ok) throw new Error('Failed to update room');
+    
     showToast(`Room ${roomNumber} marked as ${newStatus}`, 'success');
-  } else {
-    showToast('Failed to update room status', 'error');
+    await loadAllData();
+  } catch (err) {
+    showToast('Error: ' + err.message, 'error');
   }
 }
 
@@ -288,59 +318,59 @@ async function submitBooking(event) {
   btn.textContent = 'Processing...';
 
   try {
-    if (!window.dataSdk) {
-      showToast('Data SDK not available', 'error');
-      return;
-    }
-
     const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
     const template = ROOM_TEMPLATES.find(t => t.type === roomType);
     const amount = nights * template.price;
-    const resId = 'RES-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-    const payId = 'PAY-' + Math.random().toString(36).substr(2, 6).toUpperCase();
 
-    // Create guest
-    const guestRes = await window.dataSdk.create({
-      record_type: 'guest',
-      guest_id: 'GUEST-' + Math.random().toString(36).substr(2, 6),
-      full_name: name,
-      email: email,
-      phone_number: phone,
-      national_id: nationalId
+    // Create guest first
+    const guestResponse = await fetch(`${API_BASE_URL}/guests`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        full_name: name,
+        email: email,
+        phone_number: phone,
+        national_id: nationalId
+      })
     });
 
-    if (!guestRes.isOk) throw new Error('Failed to create guest');
+    if (!guestResponse.ok) throw new Error('Failed to create guest');
+    const guestData = await guestResponse.json();
+    const guestId = guestData.guest_id;
 
     // Create reservation
-    const resResult = await window.dataSdk.create({
-      record_type: 'reservation',
-      reservation_id: resId,
-      full_name: name,
-      email: email,
-      phone_number: phone,
-      room_type: roomType,
-      check_in_date: checkIn,
-      check_out_date: checkOut,
-      reservation_date: new Date().toISOString(),
-      reservation_status: 'Confirmed',
-      payment_amount: amount,
-      payment_method: paymentMethod
+    const resResponse = await fetch(`${API_BASE_URL}/reservations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        guest_id: guestId,
+        room_type: roomType,
+        check_in_date: checkIn,
+        check_out_date: checkOut,
+        payment_method: paymentMethod,
+        payment_amount: amount
+      })
     });
 
-    if (!resResult.isOk) throw new Error('Failed to create reservation');
+    if (!resResponse.ok) throw new Error('Failed to create reservation');
+    const resData = await resResponse.json();
+    const resId = resData.reservation_id;
 
     // Create payment
-    const payResult = await window.dataSdk.create({
-      record_type: 'payment',
-      payment_id: payId,
-      reservation_id: resId,
-      payment_amount: amount,
-      payment_date: new Date().toISOString(),
-      payment_method: paymentMethod,
-      payment_status: 'Fully Paid'
+    const payResponse = await fetch(`${API_BASE_URL}/payments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        reservation_id: resId,
+        guest_id: guestId,
+        amount: amount,
+        payment_date: new Date().toISOString(),
+        payment_method: paymentMethod,
+        payment_status: 'Completed'
+      })
     });
 
-    if (!payResult.isOk) throw new Error('Failed to create payment');
+    if (!payResponse.ok) throw new Error('Failed to create payment');
 
     // Show confirmation
     document.getElementById('conf-resid').textContent = resId;
@@ -369,41 +399,53 @@ function resetBookingForm() {
 }
 
 // ==================== LOOKUP RESERVATION ====================
-function lookupReservation(event) {
+async function lookupReservation(event) {
   event.preventDefault();
   const resId = document.getElementById('lookupId').value.trim();
   const email = document.getElementById('lookupEmail').value.trim();
 
-  const found = allReservations.find(r =>
-    r.record_type === 'reservation' &&
-    r.reservation_id === resId &&
-    r.email === email
-  );
+  try {
+    const response = await fetch(`${API_BASE_URL}/reservations/lookup/${resId}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
 
-  if (!found) {
+    if (!response.ok) {
+      throw new Error('Reservation not found');
+    }
+
+    const found = await response.json();
+
+    // Verify email matches
+    if (found.email !== email) {
+      document.getElementById('lookup-error').textContent = 'Email does not match this reservation.';
+      document.getElementById('lookup-error').style.display = 'block';
+      document.getElementById('reservation-details').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('lookup-error').style.display = 'none';
+    document.getElementById('res-id-display').textContent = found.reservation_id;
+    document.getElementById('res-guest-name').textContent = found.full_name;
+    document.getElementById('res-guest-email').textContent = found.email;
+    document.getElementById('res-guest-phone').textContent = found.phone_number;
+    document.getElementById('res-room').textContent = found.room_type;
+    document.getElementById('res-room-num').textContent = found.room_number || 'TBA';
+    document.getElementById('res-checkin').textContent = formatDate(found.check_in_date);
+    document.getElementById('res-checkout').textContent = formatDate(found.check_out_date);
+    document.getElementById('res-amount').textContent = `$${found.payment_amount || '0'}`;
+    document.getElementById('res-payment-id').textContent = found.payment_id || 'N/A';
+
+    const badge = document.getElementById('res-status-badge');
+    badge.textContent = found.reservation_status || 'Pending';
+    badge.className = 'status-badge status-' + (found.reservation_status?.toLowerCase() || 'pending');
+
+    document.getElementById('reservation-details').style.display = 'block';
+  } catch (err) {
     document.getElementById('lookup-error').textContent = 'Reservation not found. Please check your ID and email.';
     document.getElementById('lookup-error').style.display = 'block';
     document.getElementById('reservation-details').style.display = 'none';
-    return;
   }
-
-  document.getElementById('lookup-error').style.display = 'none';
-  document.getElementById('res-id-display').textContent = found.reservation_id;
-  document.getElementById('res-guest-name').textContent = found.full_name;
-  document.getElementById('res-guest-email').textContent = found.email;
-  document.getElementById('res-guest-phone').textContent = found.phone_number;
-  document.getElementById('res-room').textContent = found.room_type;
-  document.getElementById('res-room-num').textContent = found.room_number || 'TBA';
-  document.getElementById('res-checkin').textContent = formatDate(found.check_in_date);
-  document.getElementById('res-checkout').textContent = formatDate(found.check_out_date);
-  document.getElementById('res-amount').textContent = `$${found.payment_amount || '0'}`;
-  document.getElementById('res-payment-id').textContent = found.payment_id || 'N/A';
-
-  const badge = document.getElementById('res-status-badge');
-  badge.textContent = found.reservation_status;
-  badge.className = 'status-badge status-' + (found.reservation_status?.toLowerCase() || 'pending');
-
-  document.getElementById('reservation-details').style.display = 'block';
 }
 
 // ==================== LOGIN & LOGOUT ====================
@@ -443,7 +485,7 @@ function showAdminTab(tab) {
 }
 
 // ==================== CONTACT FORM ====================
-function sendContactMsg(event) {
+async function sendContactMsg(event) {
   event.preventDefault();
   const name = document.getElementById('cName').value.trim();
   const email = document.getElementById('cEmail').value.trim();
@@ -454,16 +496,29 @@ function sendContactMsg(event) {
     return;
   }
 
-  document.getElementById('contactForm').style.display = 'none';
-  document.getElementById('contact-success').style.display = 'block';
+  try {
+    const response = await fetch(`${API_BASE_URL}/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, message })
+    });
 
-  setTimeout(() => {
-    document.getElementById('cName').value = '';
-    document.getElementById('cEmail').value = '';
-    document.getElementById('cMessage').value = '';
-    document.getElementById('contactForm').style.display = 'block';
-    document.getElementById('contact-success').style.display = 'none';
-  }, 3000);
+    if (!response.ok) throw new Error('Failed to send message');
+
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('contact-success').style.display = 'block';
+    showToast('Message sent successfully!', 'success');
+
+    setTimeout(() => {
+      document.getElementById('cName').value = '';
+      document.getElementById('cEmail').value = '';
+      document.getElementById('cMessage').value = '';
+      document.getElementById('contactForm').style.display = 'block';
+      document.getElementById('contact-success').style.display = 'none';
+    }, 3000);
+  } catch (err) {
+    showToast('Error: ' + err.message, 'error');
+  }
 }
 
 // ==================== PAGE NAVIGATION ====================
@@ -528,16 +583,18 @@ function openConfirmDelete(id, type) {
   const modal = document.getElementById('confirmModal');
   document.getElementById('confirmMsg').textContent = `Are you sure you want to delete this ${type}?`;
   document.getElementById('confirmBtn').onclick = async () => {
-    if (window.dataSdk) {
-      const item = allReservations.find(r => r.__backendId === id);
-      if (item) {
-        const result = await window.dataSdk.delete(item);
-        if (result.isOk) {
-          showToast(`${type} deleted successfully`, 'success');
-        } else {
-          showToast('Failed to delete', 'error');
-        }
-      }
+    try {
+      const response = await fetch(`${API_BASE_URL}/reservations/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (!response.ok) throw new Error('Failed to delete');
+      
+      showToast(`${type} deleted successfully`, 'success');
+      await loadAllData();
+    } catch (err) {
+      showToast('Error: ' + err.message, 'error');
     }
     closeConfirm();
   };
