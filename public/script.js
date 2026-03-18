@@ -260,18 +260,22 @@ function renderReservationsTable() {
   }
 
   noReservations.style.display = 'none';
-  tbody.innerHTML = filtered.map(res => `
+  tbody.innerHTML = filtered.map(res => {
+    const amount = parseFloat(res.payment_amount) || 0;
+    const formattedAmount = amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return `
     <tr style="border-bottom:1px solid #f1f0ed;">
       <td style="padding:0.75rem 1rem;font-size:0.8rem;font-weight:600;color:var(--gold);">${res.reservation_id || 'N/A'}</td>
       <td style="padding:0.75rem 1rem;"><p style="margin:0;font-size:0.85rem;font-weight:500;">${res.full_name || 'N/A'}</p><p style="margin:0;font-size:0.75rem;color:var(--muted);">${res.email || 'N/A'}</p></td>
       <td style="padding:0.75rem 1rem;font-size:0.85rem;">${res.room_type || 'N/A'}</td>
       <td style="padding:0.75rem 1rem;font-size:0.85rem;white-space:nowrap;">${formatDate(res.check_in_date)}</td>
       <td style="padding:0.75rem 1rem;font-size:0.85rem;white-space:nowrap;">${formatDate(res.check_out_date)}</td>
-      <td style="padding:0.75rem 1rem;font-size:0.85rem;font-weight:600;color:var(--gold);">$${res.payment_amount || '0'}</td>
+      <td style="padding:0.75rem 1rem;font-size:0.85rem;font-weight:600;color:var(--gold);">$${formattedAmount}</td>
       <td style="padding:0.75rem 1rem;"><span class="status-badge status-${res.reservation_status?.toLowerCase() || 'pending'}">${res.reservation_status || 'Pending'}</span></td>
       <td style="padding:0.75rem 1rem;"><button class="btn-outline" style="padding:0.4rem 0.75rem;font-size:0.75rem;border:1px solid #e2e8f0;border-radius:2px;cursor:pointer;" onclick="openConfirmDelete('${res.__backendId}', 'reservation')"><i data-lucide="trash-2" style="width:14px;height:14px;display:inline;"></i></button></td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
   lucide.createIcons();
 }
 
@@ -362,6 +366,7 @@ async function submitBooking(event) {
     const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
     const template = ROOM_TEMPLATES.find(t => t.type === roomType);
     const amount = nights * template.price;
+    console.log('Booking Calculation:', { nights, price_per_night: template.price, total_amount: amount });
 
     // Create guest first
     const guestResponse = await fetch(`${API_BASE_URL}/guests`, {
@@ -380,17 +385,21 @@ async function submitBooking(event) {
     const guestId = guestData.guest_id;
 
     // Create reservation
+    const reservationBody = {
+      guest_id: guestId,
+      room_type: roomType,
+      check_in_date: checkIn,
+      check_out_date: checkOut,
+      payment_method: paymentMethod,
+      payment_amount: amount
+    };
+    console.log('Submitting reservation with payment_amount:', amount);
+    console.log('Full reservation body:', reservationBody);
+    
     const resResponse = await fetch(`${API_BASE_URL}/reservations`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        guest_id: guestId,
-        room_type: roomType,
-        check_in_date: checkIn,
-        check_out_date: checkOut,
-        payment_method: paymentMethod,
-        payment_amount: amount
-      })
+      body: JSON.stringify(reservationBody)
     });
 
     if (!resResponse.ok) throw new Error('Failed to create reservation');
@@ -473,7 +482,9 @@ async function lookupReservation(event) {
     document.getElementById('res-room-num').textContent = found.room_number || 'TBA';
     document.getElementById('res-checkin').textContent = formatDate(found.check_in_date);
     document.getElementById('res-checkout').textContent = formatDate(found.check_out_date);
-    document.getElementById('res-amount').textContent = `$${found.payment_amount || '0'}`;
+    const amount = parseFloat(found.payment_amount) || 0;
+    document.getElementById('res-amount').textContent = `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    console.log('Lookup Result:', found);
     document.getElementById('res-payment-id').textContent = found.payment_id || 'N/A';
 
     const badge = document.getElementById('res-status-badge');

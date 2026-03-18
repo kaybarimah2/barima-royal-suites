@@ -118,6 +118,8 @@ app.post('/api/reservations', async (req, res) => {
       payment_amount
     } = req.body;
 
+    console.log('Creating reservation with payment_amount:', payment_amount, 'Type:', typeof payment_amount);
+
     const reservation_id = 'RES-' + uuidv4().slice(0, 6).toUpperCase();
     const reservation_date = new Date().toISOString().split('T')[0];
 
@@ -133,12 +135,16 @@ app.post('/api/reservations', async (req, res) => {
     if (payment_amount) {
       const payment_id = 'PAY-' + uuidv4().slice(0, 6).toUpperCase();
       const payment_date = reservation_date;
+      console.log('Creating payment record with amount:', payment_amount);
       await pool.query(
         `INSERT INTO payments 
          (payment_id, reservation_id, guest_id, payment_amount, payment_date, payment_method, payment_status)
          VALUES ($1, $2, $3, $4, $5, $6, 'Fully Paid')`,
         [payment_id, reservation_id, guest_id, payment_amount, payment_date, payment_method]
       );
+      console.log('Payment created with ID:', payment_id);
+    } else {
+      console.log('WARNING: No payment_amount provided!');
     }
 
     // Update room status to Occupied
@@ -164,8 +170,11 @@ app.get('/api/reservations', async (req, res) => {
        LEFT JOIN payments p ON r.reservation_id = p.reservation_id
        ORDER BY r.reservation_date DESC`
     );
+    console.log('Returning', result.rows.length, 'reservations');
+    console.log('First reservation sample:', result.rows[0]);
     res.json(result.rows);
   } catch (err) {
+    console.error('Error fetching reservations:', err);
     res.status(400).json({ error: err.message });
   }
 });
@@ -296,12 +305,20 @@ app.get('/api/stats', async (req, res) => {
     const availRooms = await pool.query("SELECT COUNT(*) as total FROM rooms WHERE room_status = 'Available'");
     const revenue = await pool.query('SELECT SUM(payment_amount) as total FROM payments WHERE payment_status = \'Fully Paid\'');
 
+    const totalRevenue = Math.round(parseFloat(revenue.rows[0].total || 0) * 100) / 100;
+    console.log('Stats Query Results:');
+    console.log('  Total Reservations:', totalRes.rows[0].total);
+    console.log('  Available Rooms:', availRooms.rows[0].total);
+    console.log('  Total Revenue from payments:', revenue.rows[0].total);
+    console.log('  Formatted Total Revenue:', totalRevenue);
+
     res.json({
       totalReservations: parseInt(totalRes.rows[0].total),
       availableRooms: parseInt(availRooms.rows[0].total),
-      totalRevenue: Math.round(parseFloat(revenue.rows[0].total || 0) * 100) / 100
+      totalRevenue: totalRevenue
     });
   } catch (err) {
+    console.error('Error fetching stats:', err);
     res.status(400).json({ error: err.message });
   }
 });
