@@ -383,6 +383,14 @@ async function submitBooking(event) {
     document.getElementById('booking-form-container').style.display = 'none';
     document.getElementById('booking-confirmation').style.display = 'block';
     showToast('✓ Reservation created successfully!', 'success');
+    
+    // Refresh admin portal data if admin is logged in
+    if (currentUser) {
+      setTimeout(() => {
+        loadAllData();
+        loadAdminStats();
+      }, 1000);
+    }
 
   } catch (err) {
     showToast('Error: ' + err.message, 'error');
@@ -449,7 +457,7 @@ async function lookupReservation(event) {
 }
 
 // ==================== LOGIN & LOGOUT ====================
-function adminLogin(event) {
+async function adminLogin(event) {
   event.preventDefault();
   const username = document.getElementById('adminUsername').value.trim();
   const password = document.getElementById('adminPassword').value.trim();
@@ -458,7 +466,12 @@ function adminLogin(event) {
     currentUser = username;
     document.getElementById('admin-login-container').style.display = 'none';
     document.getElementById('admin-dashboard-container').style.display = 'block';
+    
+    // Load fresh data from backend
+    await loadAllData();
+    await loadAdminStats();
     renderReservationsTable();
+    
     showToast('Admin login successful', 'success');
   } else {
     document.getElementById('admin-login-error').textContent = 'Invalid username or password';
@@ -476,12 +489,21 @@ function adminLogout() {
   showToast('Logged out', 'success');
 }
 
-function showAdminTab(tab) {
+async function showAdminTab(tab) {
+  // Refresh data from backend when switching tabs
+  await loadAllData();
+  await loadAdminStats();
+  
   document.getElementById('admin-reservations-panel').style.display = tab === 'reservations' ? 'block' : 'none';
   document.getElementById('admin-rooms-panel').style.display = tab === 'rooms' ? 'block' : 'none';
 
   document.getElementById('tab-reservations').classList.toggle('active', tab === 'reservations');
   document.getElementById('tab-rooms').classList.toggle('active', tab === 'rooms');
+  
+  // Render updated data
+  if (tab === 'reservations') {
+    renderReservationsTable();
+  }
 }
 
 // ==================== CONTACT FORM ====================
