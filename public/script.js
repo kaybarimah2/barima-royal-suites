@@ -411,6 +411,13 @@ async function lookupReservation(event) {
   event.preventDefault();
   const resId = document.getElementById('lookupId').value.trim();
   const email = document.getElementById('lookupEmail').value.trim();
+  const lookupForm = event.target;
+  const searchBtn = lookupForm.querySelector('button[type="submit"]');
+  
+  // Show loading state
+  const originalText = searchBtn.textContent;
+  searchBtn.disabled = true;
+  searchBtn.textContent = 'Searching...';
 
   try {
     const response = await fetch(`${API_BASE_URL}/reservations/lookup/${resId}`, {
@@ -449,10 +456,15 @@ async function lookupReservation(event) {
     badge.className = 'status-badge status-' + (found.reservation_status?.toLowerCase() || 'pending');
 
     document.getElementById('reservation-details').style.display = 'block';
+    showToast('✓ Reservation found!', 'success');
   } catch (err) {
     document.getElementById('lookup-error').textContent = 'Reservation not found. Please check your ID and email.';
     document.getElementById('lookup-error').style.display = 'block';
     document.getElementById('reservation-details').style.display = 'none';
+    showToast('Error: ' + err.message, 'error');
+  } finally {
+    searchBtn.disabled = false;
+    searchBtn.textContent = originalText;
   }
 }
 
@@ -490,19 +502,37 @@ function adminLogout() {
 }
 
 async function showAdminTab(tab) {
-  // Refresh data from backend when switching tabs
-  await loadAllData();
-  await loadAdminStats();
-  
-  document.getElementById('admin-reservations-panel').style.display = tab === 'reservations' ? 'block' : 'none';
-  document.getElementById('admin-rooms-panel').style.display = tab === 'rooms' ? 'block' : 'none';
+  // Show loading state and disable tabs
+  const tab1 = document.getElementById('tab-reservations');
+  const tab2 = document.getElementById('tab-rooms');
+  tab1.disabled = true;
+  tab2.disabled = true;
 
-  document.getElementById('tab-reservations').classList.toggle('active', tab === 'reservations');
-  document.getElementById('tab-rooms').classList.toggle('active', tab === 'rooms');
-  
-  // Render updated data
-  if (tab === 'reservations') {
-    renderReservationsTable();
+  try {
+    // Refresh data from backend when switching tabs
+    await loadAllData();
+    await loadAdminStats();
+    
+    // Update panel visibility
+    document.getElementById('admin-reservations-panel').style.display = tab === 'reservations' ? 'block' : 'none';
+    document.getElementById('admin-rooms-panel').style.display = tab === 'rooms' ? 'block' : 'none';
+
+    // Update tab highlighting
+    if (tab === 'reservations') {
+      tab1.style.color = 'var(--gold)';
+      tab1.style.borderBottom = '2px solid var(--gold)';
+      tab2.style.color = 'var(--muted)';
+      tab2.style.borderBottom = '2px solid transparent';
+      renderReservationsTable();
+    } else {
+      tab1.style.color = 'var(--muted)';
+      tab1.style.borderBottom = '2px solid transparent';
+      tab2.style.color = 'var(--gold)';
+      tab2.style.borderBottom = '2px solid var(--gold)';
+    }
+  } finally {
+    tab1.disabled = false;
+    tab2.disabled = false;
   }
 }
 
@@ -512,6 +542,8 @@ async function sendContactMsg(event) {
   const name = document.getElementById('cName').value.trim();
   const email = document.getElementById('cEmail').value.trim();
   const message = document.getElementById('cMessage').value.trim();
+  const submitBtn = event.target.querySelector('button[type="submit"]');
+  const originalText = submitBtn.textContent;
 
   if (!name || !email || !message) {
     showToast('Please fill in all fields', 'error');
@@ -519,6 +551,9 @@ async function sendContactMsg(event) {
   }
 
   try {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+
     const response = await fetch(`${API_BASE_URL}/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -529,7 +564,7 @@ async function sendContactMsg(event) {
 
     document.getElementById('contactForm').style.display = 'none';
     document.getElementById('contact-success').style.display = 'block';
-    showToast('Message sent successfully!', 'success');
+    showToast('✓ Message sent successfully!', 'success');
 
     setTimeout(() => {
       document.getElementById('cName').value = '';
@@ -537,9 +572,13 @@ async function sendContactMsg(event) {
       document.getElementById('cMessage').value = '';
       document.getElementById('contactForm').style.display = 'block';
       document.getElementById('contact-success').style.display = 'none';
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
     }, 3000);
   } catch (err) {
     showToast('Error: ' + err.message, 'error');
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
   }
 }
 
