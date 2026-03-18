@@ -108,7 +108,7 @@ function initHeroSlideshow() {
 function renderRoomsGrid() {
   const grid = document.getElementById('rooms-grid');
   grid.innerHTML = ROOM_TEMPLATES.map(room => `
-    <div class="card" style="display:flex;border-radius:4px;overflow:hidden;">
+    <div class="card" style="display:flex;border-radius:4px;overflow:hidden;margin-bottom:2rem;">
       <div style="flex:0 0 40%;height:auto;min-height:100%;">
         <img src="${room.image}" style="width:100%;height:100%;object-fit:cover;display:block;">
       </div>
