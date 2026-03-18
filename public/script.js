@@ -272,7 +272,7 @@ function renderReservationsTable() {
       <td style="padding:0.75rem 1rem;font-size:0.85rem;white-space:nowrap;">${formatDate(res.check_out_date)}</td>
       <td style="padding:0.75rem 1rem;font-size:0.85rem;font-weight:600;color:var(--gold);">$${formattedAmount}</td>
       <td style="padding:0.75rem 1rem;"><span class="status-badge status-${res.reservation_status?.toLowerCase() || 'pending'}">${res.reservation_status || 'Pending'}</span></td>
-      <td style="padding:0.75rem 1rem;"><button class="btn-outline" style="padding:0.4rem 0.75rem;font-size:0.75rem;border:1px solid #e2e8f0;border-radius:2px;cursor:pointer;" onclick="openConfirmDelete('${res.__backendId}', 'reservation')"><i data-lucide="trash-2" style="width:14px;height:14px;display:inline;"></i></button></td>
+      <td style="padding:0.75rem 1rem;"><button class="btn-outline" style="padding:0.4rem 0.75rem;font-size:0.75rem;border:1px solid #e2e8f0;border-radius:2px;cursor:pointer;" onclick="openConfirmDelete('${res.reservation_id}', 'reservation')"><i data-lucide="trash-2" style="width:14px;height:14px;display:inline;"></i></button></td>
     </tr>
   `;
   }).join('');
