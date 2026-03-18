@@ -17,6 +17,8 @@ let currentSlide = 0;
 let allReservations = [];
 let currentUser = null;
 let reservationSearchTerm = '';
+let isAutoLogout = false; // Flag to prevent double logout messages
+
 
 // ==================== API CONFIG ====================
 const API_BASE_URL = 'http://localhost:3000/api';
@@ -481,7 +483,7 @@ function adminLogout() {
   document.getElementById('adminPassword').value = '';
   document.getElementById('admin-login-container').style.display = 'flex';
   document.getElementById('admin-dashboard-container').style.display = 'none';
-  showPage('admin');
+  isAutoLogout = false;
   showToast('Logged out', 'success');
 }
 
@@ -568,16 +570,36 @@ async function sendContactMsg(event) {
 
 // ==================== PAGE NAVIGATION ====================
 function showPage(pageName) {
+  // If leaving admin page, logout immediately
+  if (pageName !== 'admin' && currentUser && !isAutoLogout) {
+    isAutoLogout = true;
+    adminLogout();
+    showToast('Admin session ended for security', 'success');
+    return;
+  }
+  
+  isAutoLogout = false;
+
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const targetPage = document.getElementById('page-' + pageName);
   if (targetPage) targetPage.classList.add('active');
 
-  if (pageName === 'admin' && !currentUser) {
-    document.getElementById('admin-login-container').style.display = 'flex';
-    document.getElementById('admin-dashboard-container').style.display = 'none';
-  } else if (pageName === 'admin' && currentUser) {
-    document.getElementById('admin-login-container').style.display = 'none';
-    document.getElementById('admin-dashboard-container').style.display = 'block';
+  if (pageName === 'admin') {
+    if (!currentUser) {
+      // Force fresh login
+      document.getElementById('admin-login-container').style.display = 'flex';
+      document.getElementById('admin-dashboard-container').style.display = 'none';
+      document.getElementById('adminUsername').value = '';
+      document.getElementById('adminPassword').value = '';
+      document.getElementById('admin-login-error').style.display = 'none';
+    } else {
+      // Admin logged in - show dashboard and refresh all data
+      document.getElementById('admin-login-container').style.display = 'none';
+      document.getElementById('admin-dashboard-container').style.display = 'block';
+      loadAllData();
+      loadAdminStats();
+      renderReservationsTable();
+    }
   }
 }
 
