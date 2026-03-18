@@ -77,6 +77,7 @@ async function initializeApp() {
     // Initialize hero slideshow
     initHeroSlideshow();
     renderRoomsGrid();
+    renderFeaturedRooms();
     renderAdminStats();
     lucide.createIcons();
   } catch (err) {
@@ -134,36 +135,35 @@ function renderRoomsGrid() {
   lucide.createIcons();
 }
 
+// ==================== FEATURED ROOMS (HOME PAGE) ====================
+function renderFeaturedRooms() {
+  const homeGrid = document.getElementById('home-rooms-grid');
+  if (homeGrid) {
+    homeGrid.innerHTML = ROOM_TEMPLATES.map(template => `
+      <div class="room-card-home card" style="border-radius:4px;overflow:hidden;display:flex;flex-direction:column;transition:all 0.3s ease;cursor:pointer;" onclick="showPage('rooms')">
+        <div class="room-card-home-img" style="width:100%;height:220px;position:relative;overflow:hidden;">
+          <img src="${template.image}" style="width:100%;height:100%;object-fit:cover;display:block;">
+          <div class="room-card-home-overlay" style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.15);"></div>
+        </div>
+        <div class="room-card-home-content" style="padding:1.75rem;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;background:white;">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">${template.emoji}</div>
+          <p class="room-card-home-type" style="font-weight:600;margin:0 0 0.5rem;font-size:1.1rem;">${template.type} Room</p>
+          <p style="color:var(--muted);font-size:0.85rem;margin:0 0 1rem;">Capacity: ${template.capacity} ${template.capacity > 1 ? 'guests' : 'guest'}</p>
+          <p class="room-card-home-price" style="color:var(--gold);font-weight:600;margin:0;font-size:1.3rem;">$${template.price}<span style="font-size:0.8rem;font-weight:400;">/night</span></p>
+        </div>
+      </div>
+    `).join('');
+    lucide.createIcons();
+  }
+}
+
 function renderAllData(rooms) {
   // Update home rooms counter
   const available = rooms.filter(r => r.room_status === 'Available').length;
   document.getElementById('available-rooms-counter').innerHTML = `Available Rooms: <span style="font-size:1.1rem;">${available}</span> / 25`;
 
-  // Home featured rooms with images
-  const homeGrid = document.getElementById('home-rooms-grid');
-  if (homeGrid) {
-    homeGrid.innerHTML = ROOM_TEMPLATES.map(template => {
-      const availableCount = rooms.filter(r => r.room_type === template.type && r.room_status === 'Available').length;
-      const status = availableCount > 0 ? 'Available' : 'Booked';
-      return `
-        <div class="room-card-home card" style="border-radius:4px;overflow:hidden;display:flex;flex-direction:column;">
-          <div class="room-card-home-img" style="width:100%;height:200px;position:relative;overflow:hidden;">
-            <img src="${template.image}" style="width:100%;height:100%;object-fit:cover;display:block;">
-            <div class="room-card-home-overlay" style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.2);"></div>
-            <div class="room-card-home-status" style="position:absolute;top:12px;right:12px;z-index:2;">
-              <span class="status-badge ${status === 'Available' ? 'room-available' : 'room-occupied'}">${status}</span>
-            </div>
-          </div>
-          <div class="room-card-home-content" style="padding:1.5rem;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;">
-            <div style="font-size:2rem;margin-bottom:0.75rem;">${template.emoji}</div>
-            <p class="room-card-home-type" style="font-weight:600;margin:0 0 0.5rem;font-size:1rem;">${template.type} Room</p>
-            <p class="room-card-home-price" style="color:var(--gold);font-weight:600;margin:0;font-size:1.1rem;">$${template.price}/night</p>
-          </div>
-        </div>
-      `;
-    }).join('');
-    lucide.createIcons();
-  }
+  // Render featured rooms
+  renderFeaturedRooms();
 
   // Admin rooms grid
   const adminGrid = document.getElementById('admin-rooms-grid');
