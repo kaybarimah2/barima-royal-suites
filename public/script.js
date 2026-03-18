@@ -139,24 +139,25 @@ function renderAllData(rooms) {
   const available = rooms.filter(r => r.room_status === 'Available').length;
   document.getElementById('available-rooms-counter').innerHTML = `Available Rooms: <span style="font-size:1.1rem;">${available}</span> / 25`;
 
-  // Home featured rooms
+  // Home featured rooms with images
   const homeGrid = document.getElementById('home-rooms-grid');
   if (homeGrid) {
     homeGrid.innerHTML = ROOM_TEMPLATES.map(template => {
       const availableCount = rooms.filter(r => r.room_type === template.type && r.room_status === 'Available').length;
       const status = availableCount > 0 ? 'Available' : 'Booked';
       return `
-        <div class="room-card-home card" style="border-radius:4px;overflow:hidden;">
-          <div class="room-card-home-img" style="background:linear-gradient(135deg,${status === 'Available' ? '#43e97b,#38f9d7' : '#f5576c,#f093fb'});">
-            <div class="room-card-home-overlay"></div>
-            <div class="room-card-home-status">
+        <div class="room-card-home card" style="border-radius:4px;overflow:hidden;display:flex;flex-direction:column;">
+          <div class="room-card-home-img" style="width:100%;height:200px;position:relative;overflow:hidden;">
+            <img src="${template.image}" style="width:100%;height:100%;object-fit:cover;display:block;">
+            <div class="room-card-home-overlay" style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.2);"></div>
+            <div class="room-card-home-status" style="position:absolute;top:12px;right:12px;z-index:2;">
               <span class="status-badge ${status === 'Available' ? 'room-available' : 'room-occupied'}">${status}</span>
             </div>
-            <span style="position:relative;z-index:1;">${template.emoji}</span>
           </div>
-          <div class="room-card-home-content">
-            <p class="room-card-home-type">${template.type}</p>
-            <p class="room-card-home-price">$${template.price}/night</p>
+          <div class="room-card-home-content" style="padding:1.5rem;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;">
+            <div style="font-size:2rem;margin-bottom:0.75rem;">${template.emoji}</div>
+            <p class="room-card-home-type" style="font-weight:600;margin:0 0 0.5rem;font-size:1rem;">${template.type} Room</p>
+            <p class="room-card-home-price" style="color:var(--gold);font-weight:600;margin:0;font-size:1.1rem;">$${template.price}/night</p>
           </div>
         </div>
       `;
