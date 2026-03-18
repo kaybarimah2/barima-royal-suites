@@ -380,8 +380,16 @@ async function submitBooking(event) {
       })
     });
 
-    if (!guestResponse.ok) throw new Error('Failed to create guest');
+    console.log('Guest Response Status:', guestResponse.status);
+    console.log('Guest Response OK:', guestResponse.ok);
+
+    if (!guestResponse.ok) {
+      const errorData = await guestResponse.json().catch(() => ({}));
+      console.error('Guest API Error:', errorData);
+      throw new Error(`Failed to create guest (${guestResponse.status}): ${errorData.error || 'Unknown error'}`);
+    }
     const guestData = await guestResponse.json();
+    console.log('Guest Created:', guestData);
     const guestId = guestData.guest_id;
 
     // Create reservation
@@ -402,8 +410,16 @@ async function submitBooking(event) {
       body: JSON.stringify(reservationBody)
     });
 
-    if (!resResponse.ok) throw new Error('Failed to create reservation');
+    console.log('Reservation Response Status:', resResponse.status);
+    console.log('Reservation Response OK:', resResponse.ok);
+
+    if (!resResponse.ok) {
+      const errorData = await resResponse.json().catch(() => ({}));
+      console.error('Reservation API Error:', errorData);
+      throw new Error(`Failed to create reservation (${resResponse.status}): ${errorData.error || 'Unknown error'}`);
+    }
     const resData = await resResponse.json();
+    console.log('Reservation Created:', resData);
     const resId = resData.reservation_id;
 
     // Show confirmation
@@ -427,6 +443,7 @@ async function submitBooking(event) {
     }
 
   } catch (err) {
+    console.error('Booking Error Details:', err);
     showToast('Error: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
