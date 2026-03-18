@@ -356,22 +356,6 @@ async function submitBooking(event) {
     const resData = await resResponse.json();
     const resId = resData.reservation_id;
 
-    // Create payment
-    const payResponse = await fetch(`${API_BASE_URL}/payments`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        reservation_id: resId,
-        guest_id: guestId,
-        amount: amount,
-        payment_date: new Date().toISOString(),
-        payment_method: paymentMethod,
-        payment_status: 'Completed'
-      })
-    });
-
-    if (!payResponse.ok) throw new Error('Failed to create payment');
-
     // Show confirmation
     document.getElementById('conf-resid').textContent = resId;
     document.getElementById('conf-name').textContent = name;

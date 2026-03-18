@@ -114,7 +114,8 @@ app.post('/api/reservations', async (req, res) => {
       room_type,
       check_in_date,
       check_out_date,
-      payment_method
+      payment_method,
+      payment_amount
     } = req.body;
 
     const reservation_id = 'RES-' + uuidv4().slice(0, 6).toUpperCase();
@@ -122,14 +123,28 @@ app.post('/api/reservations', async (req, res) => {
 
     const result = await pool.query(
       `INSERT INTO reservations 
-       (reservation_id, guest_id, room_number, room_type, check_in_date, check_out_date, reservation_date, reservation_status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, 'Confirmed')
+       (reservation_id, guest_id, room_number, room_type, check_in_date, check_out_date, reservation_date, reservation_status, payment_method)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 'Confirmed', $8)
        RETURNING *`,
-      [reservation_id, guest_id, room_number, room_type, check_in_date, check_out_date, reservation_date]
+      [reservation_id, guest_id, room_number, room_type, check_in_date, check_out_date, reservation_date, payment_method]
     );
 
+    // Create associated payment record
+    if (payment_amount) {
+      const payment_id = 'PAY-' + uuidv4().slice(0, 6).toUpperCase();
+      const payment_date = reservation_date;
+      await pool.query(
+        `INSERT INTO payments 
+         (payment_id, reservation_id, guest_id, payment_amount, payment_date, payment_method, payment_status)
+         VALUES ($1, $2, $3, $4, $5, $6, 'Fully Paid')`,
+        [payment_id, reservation_id, guest_id, payment_amount, payment_date, payment_method]
+      );
+    }
+
     // Update room status to Occupied
-    await pool.query('UPDATE rooms SET room_status = $1 WHERE room_number = $2', ['Occupied', room_number]);
+    if (room_number) {
+      await pool.query('UPDATE rooms SET room_status = $1 WHERE room_number = $2', ['Occupied', room_number]);
+    }
 
     res.json(result.rows[0]);
   } catch (err) {
