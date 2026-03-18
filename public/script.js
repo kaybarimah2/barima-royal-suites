@@ -1,9 +1,9 @@
 // ==================== CONFIG & DATA ====================
 const ROOM_TEMPLATES = [
-  { type: 'Single', price: 129, emoji: '🛏️', capacity: 1 },
-  { type: 'Double', price: 199, emoji: '🛏️🛏️', capacity: 2 },
-  { type: 'Deluxe', price: 299, emoji: '👑', capacity: 2 },
-  { type: 'Suite', price: 499, emoji: '🏰', capacity: 4 }
+  { type: 'Single', price: 129, emoji: '🛏️', capacity: 1, image: 'https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg' },
+  { type: 'Double', price: 199, emoji: '🛏️🛏️', capacity: 2, image: 'https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg' },
+  { type: 'Deluxe', price: 299, emoji: '👑', capacity: 2, image: 'https://images.pexels.com/photos/2474070/pexels-photo-2474070.jpeg' },
+  { type: 'Suite', price: 499, emoji: '🏰', capacity: 4, image: 'https://images.pexels.com/photos/462235/pexels-photo-462235.jpeg' }
 ];
 
 const heroBackgrounds = [
@@ -108,24 +108,27 @@ function initHeroSlideshow() {
 function renderRoomsGrid() {
   const grid = document.getElementById('rooms-grid');
   grid.innerHTML = ROOM_TEMPLATES.map(room => `
-    <div class="card" style="padding:2rem;border-radius:4px;">
-      <div style="text-align:center;margin-bottom:1.5rem;">
+    <div class="card" style="border-radius:4px;overflow:hidden;">
+      <div style="height:250px;overflow:hidden;background:url('${room.image}') center/cover no-repeat;position:relative;">
+        <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.2);"></div>
+      </div>
+      <div style="padding:2rem;text-align:center;">
         <div style="font-size:3rem;margin-bottom:1rem;">${room.emoji}</div>
         <h3 class="font-display" style="font-size:1.6rem;margin:0 0 0.5rem;font-weight:400;">${room.type} Room</h3>
         <div class="section-divider" style="margin:1rem auto;"></div>
+        <ul style="list-style:none;padding:0;margin:0 0 1.5rem;color:var(--muted);font-size:0.85rem;line-height:1.8;">
+          <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Capacity: ${room.capacity} ${room.capacity > 1 ? 'guests' : 'guest'}</li>
+          <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Premium amenities</li>
+          <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Free WiFi included</li>
+          <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Daily housekeeping</li>
+        </ul>
+        <div style="background:#f8f5ee;border-radius:2px;padding:1rem;text-align:center;margin-bottom:1.5rem;">
+          <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 0.25rem;">Starting from</p>
+          <p class="font-display" style="color:var(--gold);font-size:1.8rem;margin:0;font-weight:600;">$${room.price}</p>
+          <p style="color:var(--muted);font-size:0.75rem;margin:0;">per night</p>
+        </div>
+        <button class="btn-gold" style="width:100%;padding:0.85rem;border-radius:2px;border:none;cursor:pointer;font-weight:600;transition:all 0.3s ease;" onclick="showPage('booking');document.getElementById('roomType').value='${room.type}';">Book Now</button>
       </div>
-      <ul style="list-style:none;padding:0;margin:0 0 1.5rem;color:var(--muted);font-size:0.85rem;line-height:1.8;">
-        <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Capacity: ${room.capacity} ${room.capacity > 1 ? 'guests' : 'guest'}</li>
-        <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Premium amenities</li>
-        <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Free WiFi included</li>
-        <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Daily housekeeping</li>
-      </ul>
-      <div style="background:#f8f5ee;border-radius:2px;padding:1rem;text-align:center;margin-bottom:1.5rem;">
-        <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 0.25rem;">Starting from</p>
-        <p class="font-display" style="color:var(--gold);font-size:1.8rem;margin:0;font-weight:600;">$${room.price}</p>
-        <p style="color:var(--muted);font-size:0.75rem;margin:0;">per night</p>
-      </div>
-      <button class="btn-gold" style="width:100%;padding:0.85rem;border-radius:2px;border:none;cursor:pointer;font-weight:600;transition:all 0.3s ease;" onclick="showPage('booking');document.getElementById('roomType').value='${room.type}';">Book Now</button>
     </div>
   `).join('');
   lucide.createIcons();
