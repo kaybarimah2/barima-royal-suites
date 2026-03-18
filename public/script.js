@@ -108,25 +108,27 @@ function initHeroSlideshow() {
 function renderRoomsGrid() {
   const grid = document.getElementById('rooms-grid');
   grid.innerHTML = ROOM_TEMPLATES.map(room => `
-    <div class="card" style="padding:2rem;border-radius:4px;">
-      <img src="${room.image}" style="width:100%;height:200px;object-fit:cover;margin-bottom:1.5rem;border-radius:2px;">
-      <div style="text-align:center;margin-bottom:1.5rem;">
+    <div class="card" style="display:flex;border-radius:4px;overflow:hidden;">
+      <div style="flex:0 0 40%;height:auto;min-height:100%;">
+        <img src="${room.image}" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+      <div style="flex:1;padding:2rem;display:flex;flex-direction:column;justify-content:center;text-align:center;">
         <div style="font-size:3rem;margin-bottom:1rem;">${room.emoji}</div>
         <h3 class="font-display" style="font-size:1.6rem;margin:0 0 0.5rem;font-weight:400;">${room.type} Room</h3>
         <div class="section-divider" style="margin:1rem auto;"></div>
+        <ul style="list-style:none;padding:0;margin:0 0 1.5rem;color:var(--muted);font-size:0.85rem;line-height:1.8;">
+          <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Capacity: ${room.capacity} ${room.capacity > 1 ? 'guests' : 'guest'}</li>
+          <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Premium amenities</li>
+          <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Free WiFi included</li>
+          <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Daily housekeeping</li>
+        </ul>
+        <div style="background:#f8f5ee;border-radius:2px;padding:1rem;text-align:center;margin-bottom:1.5rem;">
+          <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 0.25rem;">Starting from</p>
+          <p class="font-display" style="color:var(--gold);font-size:1.8rem;margin:0;font-weight:600;">$${room.price}</p>
+          <p style="color:var(--muted);font-size:0.75rem;margin:0;">per night</p>
+        </div>
+        <button class="btn-gold" style="width:100%;padding:0.85rem;border-radius:2px;border:none;cursor:pointer;font-weight:600;transition:all 0.3s ease;" onclick="showPage('booking');document.getElementById('roomType').value='${room.type}';">Book Now</button>
       </div>
-      <ul style="list-style:none;padding:0;margin:0 0 1.5rem;color:var(--muted);font-size:0.85rem;line-height:1.8;">
-        <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Capacity: ${room.capacity} ${room.capacity > 1 ? 'guests' : 'guest'}</li>
-        <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Premium amenities</li>
-        <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Free WiFi included</li>
-        <li><i data-lucide="check" style="width:16px;height:16px;display:inline;margin-right:0.5rem;color:var(--gold);vertical-align:middle;"></i>Daily housekeeping</li>
-      </ul>
-      <div style="background:#f8f5ee;border-radius:2px;padding:1rem;text-align:center;margin-bottom:1.5rem;">
-        <p style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 0.25rem;">Starting from</p>
-        <p class="font-display" style="color:var(--gold);font-size:1.8rem;margin:0;font-weight:600;">$${room.price}</p>
-        <p style="color:var(--muted);font-size:0.75rem;margin:0;">per night</p>
-      </div>
-      <button class="btn-gold" style="width:100%;padding:0.85rem;border-radius:2px;border:none;cursor:pointer;font-weight:600;transition:all 0.3s ease;" onclick="showPage('booking');document.getElementById('roomType').value='${room.type}';">Book Now</button>
     </div>
   `).join('');
   lucide.createIcons();
