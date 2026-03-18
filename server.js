@@ -57,7 +57,16 @@ app.get('/api/guests/:id', async (req, res) => {
 // ==================== ROOMS ====================
 app.get('/api/rooms', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM rooms ORDER BY room_number');
+    const result = await pool.query(`
+      SELECT 
+        room_number,
+        room_type,
+        price_per_night as price,
+        room_status as status,
+        capacity
+      FROM rooms 
+      ORDER BY room_number
+    `);
     res.json(result.rows);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -66,7 +75,16 @@ app.get('/api/rooms', async (req, res) => {
 
 app.get('/api/rooms/:number', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM rooms WHERE room_number = $1', [req.params.number]);
+    const result = await pool.query(`
+      SELECT 
+        room_number,
+        room_type,
+        price_per_night as price,
+        room_status as status,
+        capacity
+      FROM rooms 
+      WHERE room_number = $1
+    `, [req.params.number]);
     res.json(result.rows[0] || {});
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -75,10 +93,11 @@ app.get('/api/rooms/:number', async (req, res) => {
 
 app.put('/api/rooms/:number', async (req, res) => {
   try {
-    const { room_status } = req.body;
+    const { status, room_status } = req.body;
+    const newStatus = status || room_status;
     const result = await pool.query(
       'UPDATE rooms SET room_status = $1 WHERE room_number = $2 RETURNING *',
-      [room_status, req.params.number]
+      [newStatus, req.params.number]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -121,7 +140,15 @@ app.post('/api/reservations', async (req, res) => {
 
 app.get('/api/reservations', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM reservations ORDER BY reservation_date DESC');
+    const result = await pool.query(
+      `SELECT r.*, 
+              g.full_name, g.email, g.phone_number, g.national_id,
+              p.payment_amount, p.payment_id, p.payment_status
+       FROM reservations r
+       LEFT JOIN guests g ON r.guest_id = g.guest_id
+       LEFT JOIN payments p ON r.reservation_id = p.reservation_id
+       ORDER BY r.reservation_date DESC`
+    );
     res.json(result.rows);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -250,19 +277,20 @@ app.get('/api/contact', async (req, res) => {
 // ==================== STATS ====================
 app.get('/api/stats', async (req, res) => {
   try {
-    const reservations = await pool.query('SELECT COUNT(*) as total FROM reservations');
-    const confirmed = await pool.query("SELECT COUNT(*) as total FROM reservations WHERE reservation_status = 'Confirmed'");
-    const revenue = await pool.query('SELECT SUM(payment_amount) as total FROM payments');
+    const totalRes = await pool.query('SELECT COUNT(*) as total FROM reservations');
+    const availRooms = await pool.query("SELECT COUNT(*) as total FROM rooms WHERE room_status = 'Available'");
+    const revenue = await pool.query('SELECT SUM(payment_amount) as total FROM payments WHERE payment_status = \'Fully Paid\'');
 
     res.json({
-      total_reservations: parseInt(reservations.rows[0].total),
-      active_bookings: parseInt(confirmed.rows[0].total),
-      total_revenue: parseFloat(revenue.rows[0].total || 0)
+      totalReservations: parseInt(totalRes.rows[0].total),
+      availableRooms: parseInt(availRooms.rows[0].total),
+      totalRevenue: Math.round(parseFloat(revenue.rows[0].total || 0) * 100) / 100
     });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
+
 
 // ==================== HEALTH CHECK ====================
 app.get('/api/health', (req, res) => {
